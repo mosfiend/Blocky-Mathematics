@@ -1,6 +1,7 @@
 import { Container, Graphics } from "pixi.js";
 import Matter from "matter-js";
 import { Manager } from "../manager";
+import { Body } from "./Body";
 
 export class Background extends Container {
   constructor() {
@@ -15,16 +16,15 @@ export class Background extends Container {
     this.addChild(bg);
 
     this.ground = new Graphics().beginFill(0xff0000).drawRect(0, 0, 5000, 40);
-    this.ground.y = 600 - this.ground.height;
+    this.ground.y = 560
 
-    this.body = Matter.Bodies.rectangle(
-      this.ground.x + this.ground.width / 2,
-      this.ground.y + this.ground.height / 2,
+    this.body = new Body(
+      this.ground.x,
+      this.ground.y,
       this.ground.width,
       this.ground.height,
-      { friction: 0, isStatic: true },
+      { isStatic: true },
     );
-    Matter.World.add(Manager.physics.world, this.body);
     this.addChild(this.ground);
   }
 

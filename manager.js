@@ -1,7 +1,7 @@
 import * as PIXI from "pixi.js";
-import Matter from "matter-js";
 import { Stage } from "./scenes/Stage";
 import { Group } from "tweedle.js";
+import { bodies } from "./game/Body";
 
 export class Manager {
   constructor() {}
@@ -71,19 +71,66 @@ export class Manager {
   }
 
   static createPhysics() {
-    Manager.physics = Matter.Engine.create();
-    const runner = Matter.Runner.create();
-    Matter.Runner.run(runner, Manager.physics);
+    Manager.bodies = [];
+    Manager.obstacles = [];
   }
   static clearPhysics() {
-    Matter.World.clear(Manager.physics.world);
-    Matter.Engine.clear(Manager.physics);
-    Manager.physics = null;
-    // Notice how runner may still be running the old physics instance
+    Manager.bodies = [];
+    Manager.obstacles = [];
   }
 
   static update(deltaTime) {
+    Manager.bodies.forEach((body) => {
+      Manager.obstacles.forEach((obstacle) => {
+        const upperLimit = body.y;
+        const lowerLimit = body.y + body.height;
+        const leftLimit = body.x;
+        const rightLimit = body.x + body.width;
+        const obstUpperLimit = obstacle.y;
+        const obstLowerLimit = obstacle.y + obstacle.height;
+        const obstLeftLimit = obstacle.x;
+        const obstRightLimit = obstacle.x + obstacle.width;
+        if (
+          ((upperLimit >= obstUpperLimit && upperLimit <= obstLowerLimit) ||
+            (lowerLimit >= obstUpperLimit && lowerLimit <= obstLowerLimit)) &&
+          ((leftLimit >= obstLeftLimit && leftLimit <= obstRightLimit) ||
+            (rightLimit >= obstLeftLimit && rightLimit <= obstRightLimit))
+        ) {
+if ()
+          body.y = obstacle.y - body.height;
+        }
+      });
+
+      Manager.bodies.forEach((obstacle, idx) => {
+        if (body.id === obstacle.id) {
+          return;
+        }
+        const upperLimit = body.y;
+        const lowerLimit = body.y + body.height;
+        const leftLimit = body.x;
+        const rightLimit = body.x + body.width;
+        const obstUpperLimit = obstacle.y;
+        const obstLowerLimit = obstacle.y + obstacle.height;
+        const obstLeftLimit = obstacle.x;
+        const obstRightLimit = obstacle.x + obstacle.width;
+        if (
+          // (upperLimit >= obstUpperLimit && upperLimit <= obstLowerLimit) ||
+
+          lowerLimit >= obstUpperLimit &&
+          lowerLimit <= obstLowerLimit &&
+          ((leftLimit >= obstLeftLimit && leftLimit <= obstRightLimit) ||
+            (rightLimit >= obstLeftLimit && rightLimit <= obstRightLimit))
+        ) {
+          body.y = obstacle.y - body.height;
+        }
+      });
+    });
+
     Group.shared.update();
+    Manager.bodies.forEach((body) => {
+      body.update();
+    });
+
     if (Manager.currentScene != undefined) {
       Manager.currentScene.update(deltaTime);
     }
@@ -95,3 +142,49 @@ export class Manager {
     Manager.currentScene.transitionIn();
   }
 }
+
+function isHorizontallyBound(body1,body2) {
+        const upperLimit = body1.y;
+        const lowerLimit = body1.y + body1.height;
+        const leftLimit = body1.x;
+        const rightLimit = body1.x + body1.width;
+        const obstUpperLimit = body2.y;
+        const obstLowerLimit = body2.y + body2.height;
+        const obstLeftLimit = body2.x;
+        const obstRightLimit = body2.x + body2.width;
+        if (
+          ((upperLimit >= obstUpperLimit && upperLimit <= obstLowerLimit) ||
+            (lowerLimit >= obstUpperLimit && lowerLimit <= obstLowerLimit)) &&
+          ((leftLimit >= obstLeftLimit && leftLimit <= obstRightLimit) ||
+            (rightLimit >= obstLeftLimit && rightLimit <= obstRightLimit))
+        ) {
+
+}
+}
+
+function isHorizontallyBound(body1,body2) {
+        const upperLimit = body1.y;
+        const lowerLimit = body1.y + body1.height;
+        const leftLimit = body1.x;
+        const rightLimit = body1.x + body1.width;
+        const obstUpperLimit = body2.y;
+        const obstLowerLimit = body2.y + body2.height;
+        if (
+          ((upperLimit >= obstUpperLimit && upperLimit <= obstLowerLimit) ||
+            (lowerLimit >= obstUpperLimit && lowerLimit <= obstLowerLimit)) 
+        ) {
+
+}
+}
+function isVerticallyBound(body1,body2) {
+        const leftLimit = body1.x;
+        const rightLimit = body1.x + body1.width;
+        const obstLeftLimit = body2.x;
+        const obstRightLimit = body2.x + body2.width;
+        if (
+          ((leftLimit >= obstLeftLimit && leftLimit <= obstRightLimit) ||
+            (rightLimit >= obstLeftLimit && rightLimit <= obstRightLimit))
+        ) {
+}
+}
+

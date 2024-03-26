@@ -1,33 +1,34 @@
 import Matter from "matter-js";
 import { Container, Graphics } from "pixi.js";
 import { Manager } from "../manager";
-import { Circle, DoubleCircle, Plus, Square, Triangle } from "./Platforms";
 import { ColorChanger, Star } from "./Items";
 import { Arithmetic } from "./Arithmetic";
-
+import { Body } from "./Body";
 export class GameLoop extends Container {
   constructor() {
     super();
-    this.height;
+    this.curBlock = 1;
     this.screenWidth = Manager.width;
     this.screenHeight = Manager.height;
     this.blocks = [];
     this.obstacles = [];
 
-    // this.obstacles[
-    // Math.trunc(Math.random() * this.obstacles.length)
-    // ](Manager.app.stage.pivot.y);
+    const firstObstacle = new Obstacle(400, 4);
+    this.addChild(firstObstacle.sprite);
+    this.obstacles.push(firstObstacle);
   }
 
   update(deltaTime) {
+    const lastObstacle = this.obstacles[this.obstacles.length - 1];
     this.obstacles.forEach((obstacle) => {
       obstacle.update(deltaTime);
     });
-    if (
-      Manager.app.stage.pivot.x % 400 > -5 &&
-      Manager.app.stage.pivot.x % 400 < 5
-    ) {
-      const obstacle = new Obstacle(Math.trunc(Math.random() * 3));
+        console.log(lastObstacle.x)
+    if (lastObstacle.x > Manager.app.stage.pivot.x) {
+      const obstacle = new Obstacle(
+        lastObstacle.x + 300,
+        Math.trunc(Math.random() * 3),
+      );
       this.addChild(obstacle.sprite);
     }
   }
@@ -71,21 +72,24 @@ export class GameLoop extends Container {
 }
 
 class Obstacle {
-  constructor(blocks) {
-    this.sprite = new Graphics()
-      .beginFill(0x00ff00)
-      .drawRect(0, 0, 40 * 5, 40);
-    this.sprite.x = Manager.app.stage.pivot.x + 300;
-    this.sprite.y = 600 - 40 * blocks;
-    this.body = Matter.Bodies.rectangle(
-      this.sprite.x + this.sprite.width / 2,
-      this.sprite.y + this.sprite.height / 2,
+  constructor(blocksX, blocksY) {
+    console.log(blocksX, blocksY);
+    this.sprite = new Graphics().beginFill(0x00ff00).drawRect(0, 0, 40 * 5, 40);
+    this.sprite.x = blocksX;
+    this.sprite.y = 600 - 40 * blocksY - 40;
+    this.body = new Body(
+      this.sprite.x,
+      this.sprite.y,
       this.sprite.width,
       this.sprite.height,
-      { friction: 0, isStatic: true },
+      { isStatic: true },
     );
-    Matter.World.add(Manager.physics.world, this.body);
     // this.addChild(this.sprite);
   }
-  update() {}
+  update() {
+    this.body.setVelocity(-2, 0);
+    console.log(this.body.position);
+    this.sprite.x = this.body.position.x;
+    this.sprite.y = this.body.position.y;
+  }
 }

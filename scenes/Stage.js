@@ -1,5 +1,4 @@
 import { Container, Graphics, Sprite, Text } from "pixi.js";
-import Matter from "matter-js";
 import { sound, Sound } from "@pixi/sound";
 import { Tween } from "tweedle.js";
 import { Manager } from "../manager.js";
@@ -60,10 +59,6 @@ export class Stage extends Container {
       this.hero.startJump();
     });
 
-    Matter.Events.on(Manager.physics, "collisionStart", (e) => {
-      // Manager.gameOver();
-      this.interact(e);
-    });
     this.watch(Manager.app.view);
     // Event handling
   }
@@ -89,9 +84,9 @@ export class Stage extends Container {
     this.bg.update(deltaTime);
     const world = Manager.app.stage;
     const DIFF =
-      this.hero.mainBody.sprite.x - (this.screenWidth / 2 + world.pivot.x);
+      this.hero.mainBody.sprite.x - (this.screenWidth / 2 )-this.hero.mainBody.sprite.width/2;
     // if (DIFF > 100) {
-    world.pivot.set(world.pivot.x + DIFF, 0);
+    world.pivot.set(DIFF, 0);
     this.bg.x = world.pivot.x;
     // }
     this.gameLoop.update(deltaTime);
@@ -124,10 +119,15 @@ export class Stage extends Container {
   interact(e) {
     const colliders = [e.pairs[0].bodyA, e.pairs[0].bodyB];
     const hero = colliders.find((body) => body.gameHero);
+    // console.log(
+    //   "Collision happened",
+    //   colliders[0].position.y,
+    //   colliders[1].position.y,
+    // );
     const platform = colliders.find((body) => body.platform);
-    if (hero && platform && colliders[0].clr !== colliders[1].clr) {
-      this.lose();
-    }
+    // if (hero && platform && colliders[0].clr !== colliders[1].clr) {
+    //   this.lose();
+    // }
   }
 
   lose() {
