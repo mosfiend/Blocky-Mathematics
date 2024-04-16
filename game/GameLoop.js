@@ -13,23 +13,29 @@ export class GameLoop extends Container {
     this.blocks = [];
     this.obstacles = [];
 
-    const firstObstacle = new Obstacle(400, 4);
+    const newBlock = 1;
+    const firstObstacle = new Obstacle(0, newBlock);
+    this.curBlock = newBlock;
+
     this.addChild(firstObstacle.sprite);
     this.obstacles.push(firstObstacle);
   }
 
   update(deltaTime) {
-    const lastObstacle = this.obstacles[this.obstacles.length - 1];
     this.obstacles.forEach((obstacle) => {
       obstacle.update(deltaTime);
     });
-        console.log(lastObstacle.x)
+
+    const lastObstacle = this.obstacles[this.obstacles.length - 1].sprite;
+    console.log(lastObstacle.x, Manager.app.stage.pivot.x);
     if (lastObstacle.x > Manager.app.stage.pivot.x) {
-      const obstacle = new Obstacle(
-        lastObstacle.x + 300,
-        Math.trunc(Math.random() * 3),
-      );
+      let newBlock = this.curBlock + [-1, 1][Math.trunc(Math.random() * 2)];
+      if (newBlock < 0) newBlock = 0;
+      if (newBlock > 10) newBlock = 10;
+      const obstacle = new Obstacle(lastObstacle.x + 200, newBlock);
+      this.curBlock = newBlock;
       this.addChild(obstacle.sprite);
+      this.obstacles.push(obstacle);
     }
   }
   createBlock() {
