@@ -3,11 +3,11 @@ import { Manager } from "../manager";
 import { Sign } from "./Items";
 
 export class Arithmetic extends Container {
-  constructor(y) {
+  constructor(x) {
     super();
     this.screenWidth = Manager.width;
     this.screenHeight = Manager.height;
-    this.y = y;
+    this.x = x;
     this.body = { type: "arithmetic" };
     this.operators = [...Manager.operators];
 
@@ -41,16 +41,14 @@ export class Arithmetic extends Container {
       this.addChild(choice);
       this.choices.push(choice);
     }
-    this.sign = new Sign(y, this.operator);
-    this.sign.x += this.pivot.x - this.sign.shape.width / 2;
-    this.sign.y += 240;
     this.text.x = Manager.width / 2 - this.text.width / 2 + this.pivot.x;
     this.text.y = 120;
 
-    this.addChild(
-      this.text,
-      // this.sign
-    );
+    this.obstacle = new Graphics()
+      .beginFill(0xffff00)
+      .drawRect(0, 0, 40, this.screenHeight);
+
+    this.addChild(this.text, this.obstacle);
   }
 
   update() {
@@ -76,8 +74,8 @@ export class Arithmetic extends Container {
       this.operator === "minus"
         ? this.operands[0]
         : this.operator === "plus"
-        ? 20
-        : 10;
+          ? 20
+          : 10;
     this.operands[1] = Math.trunc(Math.random() * ceil2) + 1;
     if (this.operator === "by") {
       this.operands[0] = this.operands[0] * this.operands[1];
@@ -88,7 +86,7 @@ export class Arithmetic extends Container {
       this.operands[0] = Math.trunc(Math.random() * ceil1) + 1;
       this.operands[1] = Math.trunc(Math.random() * ceil2) + 1;
       if (this.operator === "by")
-        this.operands[0] = this.operands[0] * this.operands21;
+        this.operands[0] = this.operands[0] * this.operands[1];
     }
     this.text.text =
       this.operands[0] +
@@ -162,16 +160,15 @@ class Choice extends Container {
 
   update() {}
 }
-// Possible ways to meet her again:
-//
-// Best courses of action (slightly delayed):
-// - Meet in OCE
-// - Message her phone (OCE does not start again)
 
-// Remote
-// Contact  through oussama
-// Contact through binome
-// Luck:
-// Meet in patho
-// Meet in faculty
-// Meet in hospital
+//
+//
+////
+//
+//
+//
+//
+//
+// Constants: block width,
+// height
+// two windows

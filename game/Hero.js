@@ -17,8 +17,6 @@ export class Hero extends Container {
     // graphics
     this.mainBody = {};
     this.mainBody.sprite = Sprite.from("hero");
-    console.log(this.mainBody.sprite.width, this.mainBody.sprite.height);
-    const SCALE = this.diam / this.mainBody.sprite.height;
     this.mainBody.sprite.width = this.diam;
     this.mainBody.sprite.height = this.diam;
     this.mainBody.sprite.x = this.screenWidth / 2;
@@ -51,7 +49,6 @@ export class Hero extends Container {
       bod.sprite.y = bod.body.position.y;
     });
     if (this.imploded) return;
-    console.log(this.mainBody.sprite.y);
   }
 
   interact(e) {

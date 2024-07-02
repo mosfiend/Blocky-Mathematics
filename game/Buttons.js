@@ -1,4 +1,4 @@
-import { Container, Graphics, Sprite, Text, Texture } from "pixi.js";
+import { Container, Graphics, Text } from "pixi.js";
 import { Manager } from "../manager.js";
 
 export class Selection extends Container {

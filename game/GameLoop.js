@@ -1,5 +1,5 @@
 import Matter from "matter-js";
-import { Container, Graphics } from "pixi.js";
+import { Container, Graphics, Sprite, Texture } from "pixi.js";
 import { Manager } from "../manager";
 import { ColorChanger, Star } from "./Items";
 import { Arithmetic } from "./Arithmetic";
@@ -10,11 +10,16 @@ export class GameLoop extends Container {
     this.curBlock = 1;
     this.screenWidth = Manager.width;
     this.screenHeight = Manager.height;
+    this.diam = 40;
     this.blocks = [];
     this.obstacles = [];
 
     const newBlock = 1;
-    const firstObstacle = new Obstacle(0, newBlock);
+    const firstObstacle = new Obstacle(
+      -40,
+      newBlock,
+      Math.ceil(this.screenWidth / this.diam),
+    );
     this.curBlock = newBlock;
 
     this.addChild(firstObstacle.sprite);
@@ -27,12 +32,15 @@ export class GameLoop extends Container {
     });
 
     const lastObstacle = this.obstacles[this.obstacles.length - 1].sprite;
-    console.log(lastObstacle.x, Manager.app.stage.pivot.x);
-    if (lastObstacle.x > Manager.app.stage.pivot.x) {
+    // console.log(lastObstacle.x, Manager.app.stage.pivot.x);
+    if (lastObstacle.x < Manager.app.stage.pivot.x + Manager.width) {
       let newBlock = this.curBlock + [-1, 1][Math.trunc(Math.random() * 2)];
       if (newBlock < 0) newBlock = 0;
       if (newBlock > 10) newBlock = 10;
-      const obstacle = new Obstacle(lastObstacle.x + 200, newBlock);
+      const obstacle = [
+        new Obstacle(lastObstacle.x + lastObstacle.width, newBlock, 5),
+        // new Arithmetic(lastObstacle.x + 40, newBlock),
+      ][Math.trunc(Math.random() * 1)];
       this.curBlock = newBlock;
       this.addChild(obstacle.sprite);
       this.obstacles.push(obstacle);
@@ -78,24 +86,38 @@ export class GameLoop extends Container {
 }
 
 class Obstacle {
-  constructor(blocksX, blocksY) {
-    console.log(blocksX, blocksY);
-    this.sprite = new Graphics().beginFill(0x00ff00).drawRect(0, 0, 40 * 5, 40);
-    this.sprite.x = blocksX;
+  constructor(x, blocksY, blocksX) {
+    // this.sprite = new Graphics().beginFill(0x00ff00).drawRect(0, 0, 40 * 5, 40);
+    this.sprite = new Container();
+    this.sprite.x = x;
     this.sprite.y = 600 - 40 * blocksY - 40;
-    this.body = new Body(
-      this.sprite.x,
-      this.sprite.y,
-      this.sprite.width,
-      this.sprite.height,
-      { isStatic: true },
-    );
-    // this.addChild(this.sprite);
+    // console.log(sprite.y);
+    let num = (Manager.height - this.sprite.y) / 40;
+
+    for (let i = 0; i < blocksX; i++) {
+      for (let j = 0; j < num; j++) {
+        const sprite = Sprite.from(j === 0 ? "grass" : "ground");
+        sprite.x = 40 * i;
+        sprite.y = 40 * j;
+        sprite.width = 40;
+        sprite.height = 40;
+        this.sprite.addChild(sprite);
+      }
+    }
+
+    this.body = new Body(this.sprite.x, this.sprite.y, 40 * blocksX, 40 * num, {
+      isStatic: true,
+    });
   }
   update() {
     this.body.setVelocity(-2, 0);
-    console.log(this.body.position);
     this.sprite.x = this.body.position.x;
     this.sprite.y = this.body.position.y;
+  }
+}
+
+class Tile extends Sprite {
+  constructor() {
+    Tile.texture = "grass_tile";
   }
 }

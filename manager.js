@@ -80,6 +80,25 @@ export class Manager {
   }
 
   static update(deltaTime) {
+    Manager.handleCollisions();
+
+    Group.shared.update();
+    Manager.bodies.forEach((body) => {
+      body.update();
+    });
+
+    if (Manager.currentScene != undefined) {
+      Manager.currentScene.update(deltaTime);
+    }
+  }
+
+  static gameOver() {
+    if (Manager.currentScene != undefined) Manager.currentScene.transitionOut();
+    Manager.currentScene = new Stage();
+    Manager.currentScene.transitionIn();
+  }
+
+  static handleCollisions() {
     Manager.bodies.forEach((body) => {
       Manager.obstacles.forEach((obstacle) => {
         const upperLimit = body.y;
@@ -96,7 +115,33 @@ export class Manager {
           ((leftLimit >= obstLeftLimit && leftLimit <= obstRightLimit) ||
             (rightLimit >= obstLeftLimit && rightLimit <= obstRightLimit))
         ) {
-          body.y = obstacle.y - body.height;
+          const overlapX =
+            body.x + body.width / 2 < obstacle.x + obstacle.width / 2
+              ? body.x + body.width - obstacle.x
+              : obstacle.x + obstacle.width - body.x;
+          const overlapY =
+            body.y + body.height / 2 < obstacle.y + obstacle.width / 2
+              ? body.y + body.height - obstacle.y
+              : obstacle.y + obstacle.height - body.y;
+
+          if (overlapX < overlapY) {
+            if (body.dx > 0) {
+              body.x = obstacle.x - body.width;
+            } else if (body.dx < 0) {
+              body.x = obstacle.x + obstacle.width;
+            }
+
+            body.dx = 0;
+          } else {
+            // this.grounded = false;
+            if (body.dy > 0) {
+              body.y = obstacle.y - body.height;
+              // this.grounded = true;
+            } else if (body.dy < 0) {
+              body.y = obstacle.y + obstacle.height;
+            }
+            body.dy = 0;
+          }
         }
       });
 
@@ -124,49 +169,5 @@ export class Manager {
         }
       });
     });
-
-    Group.shared.update();
-    Manager.bodies.forEach((body) => {
-      body.update();
-    });
-
-    if (Manager.currentScene != undefined) {
-      Manager.currentScene.update(deltaTime);
-    }
-  }
-
-  static gameOver() {
-    if (Manager.currentScene != undefined) Manager.currentScene.transitionOut();
-    Manager.currentScene = new Stage();
-    Manager.currentScene.transitionIn();
-  }
-}
-
-function isHorizontallyBound(body1, body2) {
-  const leftLimit = body.x;
-  const rightLimit = body.x + body.width;
-  const obstLeftLimit = obstacle.x;
-  const obstRightLimit = obstacle.x + obstacle.width;
-  if (
-    (leftLimit >= obstLeftLimit && leftLimit <= obstRightLimit) ||
-    (rightLimit >= obstLeftLimit && rightLimit <= obstRightLimit)
-  ) {
-    return true;
-  } else {
-    return false;
-  }
-}
-
-function isVerticallyBound(body1, body2) {
-  const upperLimit = body.y;
-  const lowerLimit = body.y + body.height;
-  const obstUpperLimit = obstacle.y;
-  const obstLowerLimit = obstacle.y + obstacle.height;
-  if (upperLimit >= obstUpperLimit && upperLimit <= obstLowerLimit) {
-    return "up";
-  } else if (lowerLimit >= obstUpperLimit && lowerLimit <= obstLowerLimit) {
-    return "down";
-  } else {
-    return false;
   }
 }

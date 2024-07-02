@@ -16,6 +16,8 @@ export const manifest = {
         sound: "/images/sound.png",
         pause: "/images/pause.png",
         again: "/images/again.png",
+        grass: "/images/tile.png",
+        ground: "/images/tile2.png",
       },
     },
     {
