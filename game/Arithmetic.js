@@ -1,6 +1,5 @@
 import { Container, Graphics, Text } from "pixi.js";
 import { Manager } from "../manager";
-import { Sign } from "./Items";
 
 export class Arithmetic extends Container {
   constructor(x) {
@@ -45,8 +44,8 @@ export class Arithmetic extends Container {
     this.text.y = 120;
 
     this.obstacle = new Graphics()
-      .beginFill(0xffff00)
-      .drawRect(0, 0, 40, this.screenHeight);
+      .rect(0, 0, 40, this.screenHeight)
+      .fill(0xffff00);
 
     this.addChild(this.text, this.obstacle);
   }
@@ -147,9 +146,7 @@ class Choice extends Container {
     });
     this.text.x = width / 2 - this.text.width / 2;
     this.text.y = height / 2 - this.text.height / 2;
-    this.sprite = new Graphics()
-      .beginFill(0xcccccc)
-      .drawRoundedRect(0, 0, width, height);
+    this.sprite = new Graphics().roundRect(0, 0, width, height).fill(0xcccccc);
     this.sprite.eventMode = "static";
     this.sprite.cursor = "pointer";
 

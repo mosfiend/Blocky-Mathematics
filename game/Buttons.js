@@ -24,9 +24,7 @@ export class Icon extends Container {
     this.selected = Manager.arithmetic[texture];
     this.icons = { plus: "+", minus: "-", times: "×", by: "÷" };
 
-    this.border = new Graphics()
-      .beginFill(0x4eac8e)
-      .drawRoundedRect(0, 0, 68, 60, 20);
+    this.border = new Graphics().roundRect(0, 0, 68, 60, 20).fill(0x4eac8e);
     this.text = new Text(this.icons[texture], {
       fill: 0xffffff,
       fontFamily: "Madimi One",

@@ -1,5 +1,5 @@
 import { Tween } from "tweedle.js";
-import { Container,Graphics, Sprite } from "pixi.js";
+import { Container, Graphics, Sprite } from "pixi.js";
 import { Menu } from "./Menu";
 import { Selection } from "./Buttons";
 import { Manager } from "../manager";
@@ -17,8 +17,8 @@ export class GameOver extends Container {
     this.selection.x = this.screenWidth / 2 - this.selection.width / 2;
     this.selection.y = 10;
     this.border = new Graphics()
-      .beginFill(0xcee7e1)
-      .drawRect(0, 0, this.screenWidth, 78);
+      .rect(0, 0, this.screenWidth, 78)
+      .fill(0xcee7e1);
     this.again = Sprite.from("again");
     this.again.width = 80;
     this.again.height = 80;
@@ -39,8 +39,8 @@ export class GameOver extends Container {
       cb();
     });
     this.bg = new Graphics()
-      .beginFill(0x2e3037)
-      .drawRect(0, 0, this.screenWidth, this.screenHeight);
+      .rect(0, 0, this.screenWidth, this.screenHeight)
+      .fill(0x2e3037);
     this.addChild(this.bg, this.border, this.selection, this.again);
 
     new Tween(this.again)

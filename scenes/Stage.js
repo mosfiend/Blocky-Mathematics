@@ -5,7 +5,6 @@ import { Manager } from "../manager.js";
 import { Background } from "../game/Background.js";
 import { Hero } from "../game/Hero.js";
 import { GameLoop } from "../game/GameLoop.js";
-import { Square } from "../game/Platforms.js";
 import { GameOver } from "../game/GameOver.js";
 import { StartMenu } from "./StartMenu.js";
 
@@ -48,8 +47,6 @@ export class Stage extends Container {
       letterSpacing: 2,
     });
 
-    this.scoreBoard.x = 15 + this.scoreBoard.width;
-    this.scoreBoard.y = Manager.app.stage.pivot.y + 15;
     this.bg = new Background();
     this.gameLoop = new GameLoop();
     this.addChild(this.bg, this.gameLoop, this.hero, this.scoreBoard);
@@ -76,18 +73,24 @@ export class Stage extends Container {
   }
   update(deltaTime) {
     this.hero.update(deltaTime);
-    if (this.lost) return;
-    this.handleEvent();
-    this.scoreBoard.text = Math.trunc(this.score);
-    this.scoreBoard.y = Manager.app.stage.pivot.y + 15;
-    this.pause.y = Manager.app.stage.pivot.y + 20;
-    this.bg.update(deltaTime);
+
     const world = Manager.app.stage;
     const DIFF =
-      this.hero.mainBody.sprite.x - (this.screenWidth / 2 )-this.hero.mainBody.sprite.width/2;
+      this.hero.mainBody.sprite.x -
+      this.screenWidth / 2 +
+      this.hero.mainBody.sprite.width;
     // if (DIFF > 100) {
+    //
     world.pivot.set(DIFF, 0);
     this.bg.x = world.pivot.x;
+
+    if (this.lost) return;
+    this.handleEvent();
+    this.handleCollisions();
+    this.scoreBoard.text = Math.trunc(this.score);
+    this.scoreBoard.x = Manager.app.stage.pivot.x + 15;
+    this.pause.y = Manager.app.stage.pivot.y + 20;
+    this.bg.update(deltaTime);
     // }
     this.gameLoop.update(deltaTime);
 
@@ -119,11 +122,6 @@ export class Stage extends Container {
   interact(e) {
     const colliders = [e.pairs[0].bodyA, e.pairs[0].bodyB];
     const hero = colliders.find((body) => body.gameHero);
-    // console.log(
-    //   "Collision happened",
-    //   colliders[0].position.y,
-    //   colliders[1].position.y,
-    // );
     const platform = colliders.find((body) => body.platform);
     // if (hero && platform && colliders[0].clr !== colliders[1].clr) {
     //   this.lose();
@@ -131,28 +129,103 @@ export class Stage extends Container {
   }
 
   lose() {
-    this.hero.implode();
+    this.hero.die();
     this.lost = true;
-    const temp = new Graphics()
-      .beginFill(0x2e3037)
-      .drawRect(0, 0, this.screenWidth, this.screenHeight);
-    temp.y = Manager.app.stage.pivot.y;
-    temp.alpha = 0;
-    this.addChild(temp);
-    const tween1 = new Tween(temp).to({ alpha: 0 }, 400);
-    const tween2 = new Tween(temp).to({ alpha: 1 }, 500);
+    // const temp = new Graphics()
+    //   .rect(0, 0, this.screenWidth, this.screenHeight);
+    //   .fill(0x2e3037)
+    // temp.y = Manager.app.stage.pivot.y;
+    // temp.alpha = 0;
+    // this.addChild(temp);
+    // const tween1 = new Tween(temp).to({ alpha: 0 }, 400);
+    // const tween2 = new Tween(temp).to({ alpha: 1 }, 500);
+    //
+    // tween1.start().onComplete(() => {
+    //   tween2.start().onComplete(() => {
+    //     const scene = new GameOver(func);
+    //     Manager.app.stage.pivot.set(0, 0);
+    //     this.addChild(scene);
+    //   });
+    // });
+    // function func() {
+    //   Manager.clearPhysics();
+    //   Manager.createPhysics();
+    //   Manager.changeScene(new Stage());
+    // }
+  }
 
-    tween1.start().onComplete(() => {
-      tween2.start().onComplete(() => {
-        const scene = new GameOver(func);
-        Manager.app.stage.pivot.set(0, 0);
-        this.addChild(scene);
+  handleCollisions() {
+    Manager.bodies.forEach((body, idx) => {
+      Manager.obstacles.forEach((obstacle) => {
+        const upperLimit = body.y;
+        const lowerLimit = body.y + body.height;
+        const leftLimit = body.x;
+        const rightLimit = body.x + body.width;
+        const obstUpperLimit = obstacle.y;
+        const obstLowerLimit = obstacle.y + obstacle.height;
+        const obstLeftLimit = obstacle.x;
+        const obstRightLimit = obstacle.x + obstacle.width;
+        if (
+          ((upperLimit >= obstUpperLimit && upperLimit <= obstLowerLimit) ||
+            (lowerLimit >= obstUpperLimit && lowerLimit <= obstLowerLimit)) &&
+          ((leftLimit >= obstLeftLimit && leftLimit <= obstRightLimit) ||
+            (rightLimit >= obstLeftLimit && rightLimit <= obstRightLimit))
+        ) {
+          const overlapX =
+            body.x + body.width / 2 < obstacle.x + obstacle.width / 2
+              ? body.x + body.width - obstacle.x
+              : obstacle.x + obstacle.width - body.x;
+          const overlapY =
+            body.y + body.height / 2 < obstacle.y + obstacle.width / 2
+              ? body.y + body.height - obstacle.y
+              : obstacle.y + obstacle.height - body.y;
+
+          if (overlapX < overlapY) {
+            if (body.dx > 0) {
+              body.x = obstacle.x - body.width;
+              if (idx === Manager.bodies.length - 1) this.lose();
+            } else if (body.dx < 0) {
+              body.x = obstacle.x + obstacle.width;
+            }
+
+            body.dx = 0;
+          } else {
+            // this.grounded = false;
+            if (body.dy > 0) {
+              body.y = obstacle.y - body.height;
+              // this.grounded = true;
+            } else if (body.dy < 0) {
+              body.y = obstacle.y + obstacle.height;
+            }
+            body.dy = 0;
+          }
+        }
+      });
+
+      Manager.bodies.forEach((obstacle, idx) => {
+        if (body.id === obstacle.id) {
+          return;
+        }
+        const upperLimit = body.y;
+        const lowerLimit = body.y + body.height;
+        const leftLimit = body.x;
+        const rightLimit = body.x + body.width;
+        const obstUpperLimit = obstacle.y;
+        const obstLowerLimit = obstacle.y + obstacle.height;
+        const obstLeftLimit = obstacle.x;
+        const obstRightLimit = obstacle.x + obstacle.width;
+        if (
+          // (upperLimit >= obstUpperLimit && upperLimit <= obstLowerLimit) ||
+
+          lowerLimit >= obstUpperLimit &&
+          lowerLimit <= obstLowerLimit &&
+          ((leftLimit >= obstLeftLimit && leftLimit <= obstRightLimit) ||
+            (rightLimit >= obstLeftLimit && rightLimit <= obstRightLimit))
+        ) {
+          body.y = obstacle.y - body.height;
+          body.dy = 0;
+        }
       });
     });
-    function func() {
-      Manager.clearPhysics();
-      Manager.createPhysics();
-      Manager.changeScene(new Stage());
-    }
   }
 }

@@ -9,8 +9,8 @@ export class Menu extends Container {
     this.screenHeight = Manager.height;
 
     this.bg = new Graphics()
-      .beginFill(0x2e3037)
-      .drawRect(0, 0, this.screenWidth, this.screenHeight);
+      .rect(0, 0, this.screenWidth, this.screenHeight)
+      .fill(0x2e3037);
     this.addChild(this.bg);
   }
   update() {}

@@ -15,7 +15,7 @@
     "@pixi/sound": "^5.2.1",
     "matter-js": "^0.19.0",
     "pixi-filters": "^5.2.1",
-    "pixi.js": "^7.3.1",
+    "pixi.js": "^8.2.2",
     "tweedle.js": "^2.1.0",
     "uuid": "^9.0.1"
   }

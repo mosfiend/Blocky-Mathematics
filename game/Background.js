@@ -1,4 +1,11 @@
-import { Container, Graphics } from "pixi.js";
+import {
+  Container,
+  Graphics,
+  Sprite,
+  Texture,
+  TilingSprite,
+  Assets,
+} from "pixi.js";
 import Matter from "matter-js";
 import { Manager } from "../manager";
 import { Body } from "./Body";
@@ -9,26 +16,37 @@ export class Background extends Container {
     this.screenWidth = Manager.width;
     this.screenHeight = Manager.height;
 
-    const bg = new Graphics()
-      .beginFill(0xff00ff)
-      .drawRect(0, 0, this.screenWidth, this.screenHeight);
-    bg.alpha = 0;
-    this.addChild(bg);
+    // (this.clouds1 = Sprite.from("clouds1"));
+    // this.clouds1.scale.x = 2;
+    // this.clouds1.scale.y = 2;
 
-    this.ground = new Graphics().beginFill(0xff0000).drawRect(0, 0, 5000, 40);
-    this.ground.y = 560
-
-    this.body = new Body(
-      this.ground.x,
-      this.ground.y,
-      this.ground.width,
-      this.ground.height,
-      { isStatic: true },
+    this.clouds1 = new Clouds("clouds1", 2);
+    this.clouds2 = new Clouds("clouds2", 1.3);
+    this.trees1 = new Clouds("trees1", 0.4);
+    this.trees1.y = 220;
+    this.trees1.alpha = 0.96;
+    this.trees2 = new Clouds("trees2", 0.4);
+    this.trees2.y = 300;
+    this.filler = new Graphics()
+      .rect(0, 0, this.screenWidth + 20, 100)
+      .fill(0x11211e);
+    this.filler.x = 0;
+    this.filler.y = this.screenHeight - 100;
+    console.log(this.filler.x, this.filler.y);
+    this.addChild(
+      this.clouds1,
+      this.clouds2,
+      this.trees1,
+      this.trees2,
+      this.filler,
     );
-    this.addChild(this.ground);
   }
 
   update(deltaTime) {
+    this.clouds1.tilePosition.x -= 0.1;
+    this.clouds2.tilePosition.x -= 0.25;
+    this.trees1.tilePosition.x -= 0.4;
+    this.trees2.tilePosition.x -= 0.8;
     // Matter.Body.rotate(this.roofTile.body, 0.01);
     // // Matter.Body.setAngle(this.roofTile.body, Math.PI / 4);
     // const anga = (this.roofTile.body.angle / Math.PI) * 180;
@@ -38,24 +56,13 @@ export class Background extends Container {
   }
 }
 
-class RoofTile {
-  constructor(x, y) {
-    this.sprite = new Graphics().beginFill(0xff0000).drawRect(0, 0, 400, 30);
-    // this.sprite.scale.set(3);
-    this.sprite.pivot.set(this.sprite.width / 2, this.sprite.height / 2);
-    this.sprite.x = Manager.width / 2;
-    this.sprite.y = y;
-    console.log(this.sprite.width, this.sprite.height);
-    this.body = Matter.Bodies.rectangle(
-      this.sprite.x,
-      this.sprite.y,
-      this.sprite.width,
-      this.sprite.height,
-      { friction: 0, isStatic: true },
-    );
-
-    Matter.World.add(Manager.physics.world, this.body);
-
-    this.body.ground = true;
+class Clouds extends TilingSprite {
+  constructor(texture, scale) {
+    super();
+    this.texture = Texture.from(texture);
+    this.scale.x = scale;
+    this.scale.y = scale;
+    this.width = Manager.width / scale;
+    this.height = Manager.height;
   }
 }

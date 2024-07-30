@@ -24,12 +24,12 @@ export class StartMenu extends Container {
     this.play.x = this.screenWidth / 2;
     this.play.y = this.logo.y - 60 - 20;
     this.background = new Graphics()
-      .beginFill(0xcee7e1)
-      .drawRect(0, 0, this.screenWidth, this.screenHeight);
+      .rect(0, 0, this.screenWidth, this.screenHeight)
+      .fill(0xcee7e1);
     // Create a play button
     const playButton = new Graphics()
-      .beginFill(0x4eac8e)
-      .drawRoundedRect(-150, 0, 300, 60, 15);
+      .roundRect(-150, 0, 300, 60, 15)
+      .fill(0x4eac8e);
     playButton.eventMode = "static";
     playButton.buttonMode = true;
 

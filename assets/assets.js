@@ -18,6 +18,10 @@ export const manifest = {
         again: "/images/again.png",
         grass: "/images/tile.png",
         ground: "/images/tile2.png",
+        clouds1: "/images/clouds1.png",
+        clouds2: "/images/clouds2.png",
+        trees1: "/images/trees1.png",
+        trees2: "/images/trees2.png",
       },
     },
     {

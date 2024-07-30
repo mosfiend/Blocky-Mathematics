@@ -1,4 +1,4 @@
-import * as PIXI from "pixi.js";
+import { Application, Ticker } from "pixi.js";
 import { Stage } from "./scenes/Stage";
 import { Group } from "tweedle.js";
 import { bodies } from "./game/Body";
@@ -26,7 +26,7 @@ export class Manager {
   }
 
   // Use this function ONCE to start the entire machinery
-  static initialize(width, height, background, lang) {
+  static async initialize(width, height, background, lang) {
     // store our width and height
     Manager._width = width;
     Manager._height = height;
@@ -43,7 +43,10 @@ export class Manager {
     };
 
     // Create our pixi app
-    Manager.app = new PIXI.Application({
+    Manager.app = new Application();
+    console.log(Manager.app);
+
+    await Manager.app.init({
       view: document.getElementById("pixi-canvas"),
       resizeTo: document.getElementById("parent-div"), // This line here handles the actual resize!
       resolution: window.devicePixelRatio || 1,
@@ -51,7 +54,10 @@ export class Manager {
       antialias: true,
       backgroundColor: background,
     });
-    Manager.app.ticker.add(Manager.update);
+    console.log("app", Manager.app);
+    // Manager.app.ticker.add(Manager.update);
+    Ticker.shared.add(Manager.update);
+
     window.addEventListener("resize", Manager.resize);
     globalThis.__PIXI_APP__ = Manager.app;
   }
@@ -79,7 +85,7 @@ export class Manager {
     Manager.obstacles = [];
   }
 
-  static update(deltaTime) {
+  static update(ticker) {
     Manager.handleCollisions();
 
     Group.shared.update();
@@ -88,7 +94,7 @@ export class Manager {
     });
 
     if (Manager.currentScene != undefined) {
-      Manager.currentScene.update(deltaTime);
+      Manager.currentScene.update(ticker);
     }
   }
 
@@ -166,6 +172,7 @@ export class Manager {
             (rightLimit >= obstLeftLimit && rightLimit <= obstRightLimit))
         ) {
           body.y = obstacle.y - body.height;
+          body.dy = 0;
         }
       });
     });
