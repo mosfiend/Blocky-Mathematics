@@ -84,16 +84,8 @@ export class Hero extends Container {
 
     const isBelowCeiling = Manager.obstacles.filter((obst) => {
       const hero = this.bods[this.bods.length - 1];
-      this.addChild(
-        new Graphics()
-          .rect(hero.sprite.x, hero.sprite.y, 1000, 3)
-          .fill(0xff0000),
-        new Graphics()
-          .rect(hero.sprite.x, obst.y + obst.height + 40, 1000, 3)
-          .fill(0xff0000),
-      );
       if (obst.y > hero.sprite.y) return false;
-      return hero.body.y - (obst.y + obst.height) <= 40;
+      return hero.body.y - (obst.y + obst.height) <= 40 && obst.y < 200;
     });
 
     const checkCeiling = Manager.obstacles.map((obst) => {

@@ -1,22 +1,32 @@
-import { Container, Graphics, Text } from "pixi.js";
+import { Body } from "./Body";
+import { Container, Graphics, Sprite, Text } from "pixi.js";
 import { Manager } from "../manager";
 
-export class Arithmetic extends Container {
+export class Arithmetic {
   constructor(x) {
-    super();
     this.screenWidth = Manager.width;
     this.screenHeight = Manager.height;
-    this.x = x;
-    this.body = { type: "arithmetic" };
+
+    this.sprite = new Container();
+    this.sprite.addChild(new Graphics().rect(0, 0, 80, 0).fill());
+    this.sprite.x = x;
+    this.sprite.y = 80;
+
+    for (let i = 0; i < 10; i++) {
+      const sprite = Sprite.from(i === 0 ? "grass" : "ground");
+      sprite.x = 0;
+      sprite.y = 40 * i;
+      sprite.width = 40;
+      sprite.height = 40;
+      this.sprite.addChild(sprite);
+    }
+
+    this.body = new Body(this.sprite.x, this.sprite.y, 40, 40 * 10, {
+      isStatic: true,
+    });
+
     this.operators = [...Manager.operators];
 
-    this.text = new Text("", {
-      fill: 0xcccccc,
-      fontSize: 32,
-      fontWeight: "bolder",
-      fontFamily: "Madimi One",
-      letterSpacing: 2,
-    });
     this.values = [];
     this.icons = { plus: "+", minus: "-", times: "×", by: "÷" };
     this.operands = [];
@@ -27,35 +37,17 @@ export class Arithmetic extends Container {
     this.choiceHeight = 30;
     this.sceneWidth = this.choiceWidth * lenChoices;
     this.idx = 0;
-    this.pivot.x = this.choiceWidth * 2;
+    this.sprite.pivot.x = this.choiceWidth * 2;
     this.makeOp();
-    for (let i = 0; i < 10; i++) {
-      const choice = new Choice(
-        i * this.choiceWidth,
-        0,
-        this.choiceWidth,
-        this.choiceHeight,
-        this.values[i],
-      );
-      this.addChild(choice);
-      this.choices.push(choice);
-    }
-    this.text.x = Manager.width / 2 - this.text.width / 2 + this.pivot.x;
-    this.text.y = 120;
-
-    this.obstacle = new Graphics()
-      .rect(0, 0, 40, this.screenHeight)
-      .fill(0xffff00);
-
-    this.addChild(this.text, this.obstacle);
+    console.log(this.values);
   }
 
   update() {
     this.choices.forEach((choice) => {
       choice.x = (choice.x + 2) % this.sceneWidth;
       if (
-        -this.pivot.x + choice.x > this.screenWidth / 2 - choice.width &&
-        -this.pivot.x + choice.x < this.screenWidth / 2
+        -this.sprite.pivot.x + choice.x > this.screenWidth / 2 - choice.width &&
+        -this.sprite.pivot.x + choice.x < this.screenWidth / 2
       ) {
         this.current = choice.val;
       }
@@ -87,12 +79,14 @@ export class Arithmetic extends Container {
       if (this.operator === "by")
         this.operands[0] = this.operands[0] * this.operands[1];
     }
-    this.text.text =
+
+    Manager.setOperation(
       this.operands[0] +
-      " " +
-      this.icons[this.operator] +
-      " " +
-      this.operands[1];
+        " " +
+        this.icons[this.operator] +
+        " " +
+        this.operands[1],
+    );
 
     switch (this.operator) {
       case "plus":

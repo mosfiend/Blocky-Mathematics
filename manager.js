@@ -44,7 +44,6 @@ export class Manager {
 
     // Create our pixi app
     Manager.app = new Application();
-    console.log(Manager.app);
 
     await Manager.app.init({
       view: document.getElementById("pixi-canvas"),
@@ -54,7 +53,6 @@ export class Manager {
       antialias: true,
       backgroundColor: background,
     });
-    console.log("app", Manager.app);
     // Manager.app.ticker.add(Manager.update);
     Ticker.shared.add(Manager.update);
 
@@ -176,5 +174,9 @@ export class Manager {
         }
       });
     });
+  }
+
+  static setOperation(str) {
+    Manager.str = str;
   }
 }

@@ -22,7 +22,6 @@ export class LoaderScene extends PIXI.Container {
     Manager.changeScene(new StartMenu());
   }
   transitionIn() {
-    console.log(Manager.app);
     Manager.app.stage.addChild(Manager.currentScene);
   }
 
@@ -32,4 +31,3 @@ export class LoaderScene extends PIXI.Container {
 
   resize() {}
 }
-

@@ -47,9 +47,22 @@ export class Stage extends Container {
       letterSpacing: 2,
     });
 
+    this.curOp = new Text("???", {
+      fill: 0xffffff,
+      fontWeight: "400",
+      fontFamily: "Madimi One",
+      letterSpacing: 2,
+    });
+
     this.bg = new Background();
     this.gameLoop = new GameLoop();
-    this.addChild(this.bg, this.gameLoop, this.hero, this.scoreBoard);
+    this.addChild(
+      this.bg,
+      this.gameLoop,
+      this.hero,
+      this.scoreBoard,
+      this.curOp,
+    );
     this.eventMode = "static";
     // make entire screen interactive
     this.on("pointerdown", () => {
@@ -89,6 +102,11 @@ export class Stage extends Container {
     this.handleCollisions();
     this.scoreBoard.text = Math.trunc(this.score);
     this.scoreBoard.x = Manager.app.stage.pivot.x + 15;
+
+    this.curOp.text = Manager.str || "";
+    this.curOp.x =
+      Manager.app.stage.pivot.x + this.screenWidth - this.curOp.width - 15;
+
     this.pause.y = Manager.app.stage.pivot.y + 20;
     this.bg.update(deltaTime);
     // }

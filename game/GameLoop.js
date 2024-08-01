@@ -10,7 +10,7 @@ export class GameLoop extends Container {
     this.screenWidth = Manager.width;
     this.screenHeight = Manager.height;
     this.diam = 40;
-    this.obstacles = [Gap];
+    this.obstacles = [Gap, Arithmetic];
     this.blocks = [];
     this.platforms = [];
     this.ceilings = [];
@@ -90,6 +90,10 @@ export class GameLoop extends Container {
   }
 
   createObstacle(lastPlatform, newBlock) {
+    console.log(this.obstacles);
+    const Nap =
+      this.obstacles[Math.trunc(Math.random() * this.obstacles.length)];
+
     const platform = [
       new Gap(
         lastPlatform.x + lastPlatform.width,
