@@ -1,6 +1,14 @@
 export const manifest = {
   bundles: [
     {
+      name: "tile",
+      assets: {
+        grass: "/images/tile.png",
+        ground: "/images/tile2.png",
+        corner: "/images/corner-tile.png",
+      },
+    },
+    {
       name: "misc",
       assets: {
         hero: "/images/hero.png",
@@ -16,8 +24,6 @@ export const manifest = {
         sound: "/images/sound.png",
         pause: "/images/pause.png",
         again: "/images/again.png",
-        grass: "/images/tile.png",
-        ground: "/images/tile2.png",
         clouds1: "/images/clouds1.png",
         clouds2: "/images/clouds2.png",
         trees1: "/images/trees1.png",

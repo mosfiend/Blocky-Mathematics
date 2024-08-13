@@ -3,7 +3,7 @@ import Matter from "matter-js";
 import { Manager } from "../manager";
 
 export class Gap {
-  constructor(x, blocksY, blocksX) {
+  constructor(x, blocksY) {
     // this.sprite = new Graphics().beginFill(0x00ff00).drawRect(0, 0, 40 * 5, 40);
     this.sprite = new Container();
     this.sprite.addChild(new Graphics().rect(0, 0, 80, 0).fill());

@@ -58,7 +58,6 @@ export class GameLoop extends Container {
     });
 
     const lastPlatform = this.platforms[this.platforms.length - 1].sprite;
-    // console.log(lastPlatform.x, Manager.app.stage.pivot.x);
     if (lastPlatform.x < Manager.app.stage.pivot.x + Manager.width) {
       if (this.step !== 3) {
         let newBlock =
@@ -90,12 +89,11 @@ export class GameLoop extends Container {
   }
 
   createObstacle(lastPlatform, newBlock) {
-    console.log(this.obstacles);
     const Nap =
       this.obstacles[Math.trunc(Math.random() * this.obstacles.length)];
 
     const platform = [
-      new Gap(
+      new Arithmetic(
         lastPlatform.x + lastPlatform.width,
         newBlock,
         3 + Math.trunc(Math.random() * 5),
@@ -126,7 +124,6 @@ class Platform {
     this.sprite = new Container();
     this.sprite.x = x;
     this.sprite.y = 640 - 80 - 40 * blocksY;
-    // console.log(sprite.y);
     let num = (Manager.height - this.sprite.y) / 40;
 
     for (let i = 0; i < blocksX; i++) {
@@ -146,8 +143,6 @@ class Platform {
   }
   update() {
     this.body.setVelocity(-2, 0);
-    this.sprite.x = this.body.position.x;
-    this.sprite.y = this.body.position.y;
   }
 }
 
@@ -157,7 +152,6 @@ class Ceiling {
     this.sprite = new Container();
     this.sprite.x = x;
     this.sprite.y = 0;
-    // console.log(sprite.y);
 
     for (let i = 0; i < blocksX; i++) {
       for (let j = 0; j < 2; j++) {
@@ -171,7 +165,6 @@ class Ceiling {
       }
     }
 
-    // console.log(this.sprite.height);
     // this.sprite.y -560 +80= 560 - 40 * blocksY;
 
     this.body = new Body(
