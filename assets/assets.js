@@ -6,13 +6,14 @@ export const manifest = {
         grass: "/images/tile.png",
         ground: "/images/tile2.png",
         corner: "/images/corner-tile.png",
+        center: "/images/center-tile.png",
+        coin: "/images/coin.png",
       },
     },
     {
       name: "misc",
       assets: {
         hero: "/images/hero.png",
-        star: "/images/star.png",
         plus: "/images/plus.png",
         minus: "/images/minus.png",
         times: "/images/times.png",

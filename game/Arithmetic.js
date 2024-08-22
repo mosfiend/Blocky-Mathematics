@@ -30,7 +30,7 @@ export class Arithmetic {
       this.sprite.addChild(sprite);
     }
 
-    for (let i = 0; i < idx1; i++) {
+    for (let i = -1; i < idx1; i++) {
       const sprite = Sprite.from(
         i === Math.ceil(availableBlocks / 2) - 1 || i === idx1 - 1
           ? "corner"
@@ -45,14 +45,15 @@ export class Arithmetic {
     }
 
     for (let i = idx1 + 1; i < idx2; i++) {
-      const sprite = Sprite.from(i === idx1 + 1 ? "corner" : "ground");
+      const sprite = Sprite.from(
+        idx2 === idx1 + 2 ? "center" : i === idx1 + 1 ? "corner" : "ground",
+      );
       sprite.width = 40;
       sprite.height = 40;
       sprite.x = 0;
       sprite.y = 80 + 40 * i;
       this.sprite.addChild(sprite);
     }
-    console.log(idx1, idx2);
     for (let i = idx2 + 1; i < availableBlocks; i++) {
       const sprite = Sprite.from(i === idx2 + 1 ? "corner" : "ground");
       sprite.width = 40;
@@ -89,7 +90,6 @@ export class Arithmetic {
     this.sceneWidth = this.choiceWidth * lenChoices;
     this.idx = 0;
     this.makeOp();
-    console.log(this.values);
     const value1 = new Text(
       this.values[Math.trunc(this.values.length * Math.random())],
       {
@@ -112,7 +112,6 @@ export class Arithmetic {
     });
     const possibilities = Math.trunc(Math.random() * 2);
     this.sprite.addChild(value1, value2);
-    console.log(possibilities, (possibilities + 1) % 2);
     value1.x = 20 - value1.width / 2;
     value1.y = 80 + [idx1, idx2][possibilities] * 40;
     value2.x = 20 - value2.width / 2;

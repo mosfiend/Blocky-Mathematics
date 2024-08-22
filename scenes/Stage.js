@@ -40,13 +40,7 @@ export class Stage extends Container {
     //
 
     this.hero = new Hero(this.theme);
-    this.scoreBoard = new Text("0", {
-      fill: 0xffffff,
-      fontWeight: "400",
-      fontFamily: "Madimi One",
-      letterSpacing: 2,
-    });
-
+    this.scoreBoard = new Score();
     this.curOp = new Text("???", {
       fill: 0xffffff,
       fontWeight: "400",
@@ -85,6 +79,7 @@ export class Stage extends Container {
     this.screenHeight = newHeight;
   }
   update(deltaTime) {
+    this.collectCoin();
     this.hero.update(deltaTime);
 
     const world = Manager.app.stage;
@@ -100,9 +95,7 @@ export class Stage extends Container {
     if (this.lost) return;
     this.handleEvent();
     this.handleCollisions();
-    this.scoreBoard.text = Math.trunc(this.score);
-    this.scoreBoard.x = Manager.app.stage.pivot.x + 15;
-
+    this.scoreBoard.update();
     this.curOp.text = Manager.str || "";
     this.curOp.x =
       Manager.app.stage.pivot.x + this.screenWidth - this.curOp.width - 15;
@@ -245,5 +238,57 @@ export class Stage extends Container {
         }
       });
     });
+  }
+
+  collectCoin() {
+    const hero = this.hero.bods[this.hero.bods.length - 1];
+    this.gameLoop.coins.forEach((coin) => {
+      console.log(
+        hero.sprite.x < coin.x + coin.width && hero.sprite.x > coin.x,
+        hero.sprite.x + hero.sprite.width < coin.x + coin.width &&
+          hero.sprite.x + hero.sprite.width,
+      );
+      if (
+        ((hero.sprite.x < coin.x + coin.width && hero.sprite.x > coin.x) ||
+          (hero.sprite.x + hero.sprite.width < coin.x + coin.width &&
+            hero.sprite.x + hero.sprite.width > coin.x)) &&
+        ((hero.sprite.y >= coin.y && hero.sprite.y <= coin.y + coin.height) ||
+          (hero.sprite.y + hero.sprite.height <= coin.y + coin.height &&
+            hero.sprite.y + hero.sprite.height >= coin.y))
+      ) {
+        if (!coin.collected) {
+          this.scoreBoard.increment(coin.collected);
+          coin.activate();
+          coin.collected = true;
+        }
+      }
+    });
+  }
+}
+
+class Score extends Container {
+  constructor(collected) {
+    super();
+    this.sprite = Sprite.from("coin");
+    this.score = 0;
+    this.collected = collected;
+
+    this.text = new Text("0", {
+      fill: 0xffffff,
+      fontWeight: "400",
+      fontFamily: "Madimi One",
+      fontSize: 30,
+      letterSpacing: 2,
+    });
+    this.y = 10;
+    this.text.x = this.sprite.width + 10;
+    this.text.y = this.sprite.height / 2 - this.text.height / 2;
+    this.addChild(this.sprite, this.text);
+  }
+  update() {
+    this.x = Manager.app.stage.pivot.x + 15;
+  }
+  increment() {
+    this.text.text = ++this.score;
   }
 }

@@ -3,6 +3,7 @@ import { Manager } from "../manager";
 import { Arithmetic } from "./Arithmetic";
 import { Body } from "./Body";
 import { Gap } from "./Obstacles";
+import { Coin } from "./Coin";
 export class GameLoop extends Container {
   constructor() {
     super();
@@ -14,6 +15,7 @@ export class GameLoop extends Container {
     this.blocks = [];
     this.platforms = [];
     this.ceilings = [];
+    this.coins = [];
     this.step = 1;
     const newBlock = 2;
 
@@ -86,6 +88,9 @@ export class GameLoop extends Container {
     this.addChild(platform.sprite);
     this.platforms.push(platform);
     this.step = (this.step + 1) % 5;
+    const coin = new Coin(lastPlatform.x + lastPlatform.width, newBlock * 40);
+    this.addChild(coin);
+    this.coins.push(coin);
   }
 
   createObstacle(lastPlatform, newBlock) {

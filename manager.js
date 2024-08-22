@@ -84,8 +84,6 @@ export class Manager {
   }
 
   static update(ticker) {
-    Manager.handleCollisions();
-
     Group.shared.update();
     Manager.bodies.forEach((body) => {
       body.update();
@@ -100,80 +98,6 @@ export class Manager {
     if (Manager.currentScene != undefined) Manager.currentScene.transitionOut();
     Manager.currentScene = new Stage();
     Manager.currentScene.transitionIn();
-  }
-
-  static handleCollisions() {
-    Manager.bodies.forEach((body) => {
-      Manager.obstacles.forEach((obstacle) => {
-        const upperLimit = body.y;
-        const lowerLimit = body.y + body.height;
-        const leftLimit = body.x;
-        const rightLimit = body.x + body.width;
-        const obstUpperLimit = obstacle.y;
-        const obstLowerLimit = obstacle.y + obstacle.height;
-        const obstLeftLimit = obstacle.x;
-        const obstRightLimit = obstacle.x + obstacle.width;
-        if (
-          ((upperLimit >= obstUpperLimit && upperLimit <= obstLowerLimit) ||
-            (lowerLimit >= obstUpperLimit && lowerLimit <= obstLowerLimit)) &&
-          ((leftLimit >= obstLeftLimit && leftLimit <= obstRightLimit) ||
-            (rightLimit >= obstLeftLimit && rightLimit <= obstRightLimit))
-        ) {
-          const overlapX =
-            body.x + body.width / 2 < obstacle.x + obstacle.width / 2
-              ? body.x + body.width - obstacle.x
-              : obstacle.x + obstacle.width - body.x;
-          const overlapY =
-            body.y + body.height / 2 < obstacle.y + obstacle.width / 2
-              ? body.y + body.height - obstacle.y
-              : obstacle.y + obstacle.height - body.y;
-
-          if (overlapX < overlapY) {
-            if (body.dx > 0) {
-              body.x = obstacle.x - body.width;
-            } else if (body.dx < 0) {
-              body.x = obstacle.x + obstacle.width;
-            }
-
-            body.dx = 0;
-          } else {
-            // this.grounded = false;
-            if (body.dy > 0) {
-              body.y = obstacle.y - body.height;
-              // this.grounded = true;
-            } else if (body.dy < 0) {
-              body.y = obstacle.y + obstacle.height;
-            }
-            body.dy = 0;
-          }
-        }
-      });
-
-      Manager.bodies.forEach((obstacle, idx) => {
-        if (body.id === obstacle.id) {
-          return;
-        }
-        const upperLimit = body.y;
-        const lowerLimit = body.y + body.height;
-        const leftLimit = body.x;
-        const rightLimit = body.x + body.width;
-        const obstUpperLimit = obstacle.y;
-        const obstLowerLimit = obstacle.y + obstacle.height;
-        const obstLeftLimit = obstacle.x;
-        const obstRightLimit = obstacle.x + obstacle.width;
-        if (
-          // (upperLimit >= obstUpperLimit && upperLimit <= obstLowerLimit) ||
-
-          lowerLimit >= obstUpperLimit &&
-          lowerLimit <= obstLowerLimit &&
-          ((leftLimit >= obstLeftLimit && leftLimit <= obstRightLimit) ||
-            (rightLimit >= obstLeftLimit && rightLimit <= obstRightLimit))
-        ) {
-          body.y = obstacle.y - body.height;
-          body.dy = 0;
-        }
-      });
-    });
   }
 
   static setOperation(str) {
