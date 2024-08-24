@@ -194,7 +194,6 @@ export class Stage extends Container {
           if (overlapX < overlapY) {
             if (body.dx > 0) {
               body.x = obstacle.x - body.width;
-              console.log("kill me");
               if (idx === Manager.bodies.length - 1) this.lose();
             } else if (body.dx < 0) {
               body.x = obstacle.x + obstacle.width;
