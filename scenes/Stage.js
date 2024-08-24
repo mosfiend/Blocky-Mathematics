@@ -194,6 +194,7 @@ export class Stage extends Container {
           if (overlapX < overlapY) {
             if (body.dx > 0) {
               body.x = obstacle.x - body.width;
+              console.log("kill me");
               if (idx === Manager.bodies.length - 1) this.lose();
             } else if (body.dx < 0) {
               body.x = obstacle.x + obstacle.width;
@@ -243,15 +244,10 @@ export class Stage extends Container {
   collectCoin() {
     const hero = this.hero.bods[this.hero.bods.length - 1];
     this.gameLoop.coins.forEach((coin) => {
-      console.log(
-        hero.sprite.x < coin.x + coin.width && hero.sprite.x > coin.x,
-        hero.sprite.x + hero.sprite.width < coin.x + coin.width &&
-          hero.sprite.x + hero.sprite.width,
-      );
       if (
-        ((hero.sprite.x < coin.x + coin.width && hero.sprite.x > coin.x) ||
-          (hero.sprite.x + hero.sprite.width < coin.x + coin.width &&
-            hero.sprite.x + hero.sprite.width > coin.x)) &&
+        ((hero.sprite.x <= coin.x + coin.width && hero.sprite.x >= coin.x) ||
+          (hero.sprite.x + hero.sprite.width <= coin.x + coin.width &&
+            hero.sprite.x + hero.sprite.width >= coin.x)) &&
         ((hero.sprite.y >= coin.y && hero.sprite.y <= coin.y + coin.height) ||
           (hero.sprite.y + hero.sprite.height <= coin.y + coin.height &&
             hero.sprite.y + hero.sprite.height >= coin.y))

@@ -5,14 +5,16 @@ import { Manager } from "../manager";
 export class Coin extends Container {
   constructor(x, y) {
     super();
-    this.sprite = Sprite.from("coin");
-    this.x = x;
-    this.addChild(this.sprite);
     this.collected = false;
 
+    this.sprite = Sprite.from("coin");
+    this.x = x;
+    this.y = 640 - 120 - y;
     this.sprite.width = 30;
     this.sprite.height = 30;
-    this.y = 640 - 120 - y;
+    this.sprite.y = 5;
+
+    this.addChild(this.sprite);
   }
   update() {}
   activate() {

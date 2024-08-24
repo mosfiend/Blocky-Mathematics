@@ -22,10 +22,10 @@ export class Background extends Container {
 
     this.clouds1 = new Clouds("clouds1", 2);
     this.clouds2 = new Clouds("clouds2", 1.3);
-    this.trees1 = new Clouds("trees1", 0.4);
+    this.trees1 = new Trees("trees1", 0.4);
     this.trees1.y = 220;
     this.trees1.alpha = 0.96;
-    this.trees2 = new Clouds("trees2", 0.4);
+    this.trees2 = new Trees("trees2", 0.4);
     this.trees2.y = 300;
     this.filler = new Graphics()
       .rect(0, 0, this.screenWidth + 20, 100)
@@ -43,8 +43,8 @@ export class Background extends Container {
   }
 
   update(deltaTime) {
-    this.clouds1.tilePosition.x -= 0.1;
-    this.clouds2.tilePosition.x -= 0.25;
+    // this.clouds1.tilePosition.x -= 0.1;
+    // this.clouds2.tilePosition.x -= 0.25;
     this.trees1.tilePosition.x -= 0.4;
     this.trees2.tilePosition.x -= 0.8;
     // Matter.Body.rotate(this.roofTile.body, 0.01);
@@ -56,7 +56,20 @@ export class Background extends Container {
   }
 }
 
-class Clouds extends TilingSprite {
+class Clouds extends Container {
+  constructor(texture, scale) {
+    super();
+    // this.texture = Texture.from(texture);
+    this.graph = new Graphics()
+      .rect(0, 0, Manager.width, Manager.height)
+      .fill(0x50b4d4);
+    this.addChild(this.graph);
+    this.width = Manager.width;
+    this.height = Manager.height;
+  }
+}
+
+class Trees extends TilingSprite {
   constructor(texture, scale) {
     super();
     this.texture = Texture.from(texture);

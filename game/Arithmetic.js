@@ -1,5 +1,5 @@
 import { Body } from "./Body";
-import { Container, Graphics, Sprite, Text } from "pixi.js";
+import { Container, Graphics, Sprite, Text, warn } from "pixi.js";
 import { Manager } from "../manager";
 
 export class Arithmetic {
@@ -14,10 +14,10 @@ export class Arithmetic {
     // divide into two segments
     const idx1 =
       // Math.max(
-      Math.ceil(Math.random() * Math.ceil(availableBlocks / 2));
+      Math.floor((availableBlocks / 2) * Math.random());
     // );
     const idx2 = Math.max(
-      idx1 + Math.ceil(Math.random() * Math.ceil(availableBlocks / 2)),
+      idx1 + Math.floor((availableBlocks / 2 - 1) * Math.random()),
       idx1 + 2,
     );
 
@@ -46,7 +46,13 @@ export class Arithmetic {
 
     for (let i = idx1 + 1; i < idx2; i++) {
       const sprite = Sprite.from(
-        idx2 === idx1 + 2 ? "center" : i === idx1 + 1 ? "corner" : "ground",
+        idx2 === idx1 + 2
+          ? "center"
+          : i === idx1 + 1
+            ? "corner"
+            : i === idx2 - 1
+              ? "bottom"
+              : "ground",
       );
       sprite.width = 40;
       sprite.height = 40;
@@ -54,7 +60,7 @@ export class Arithmetic {
       sprite.y = 80 + 40 * i;
       this.sprite.addChild(sprite);
     }
-    for (let i = idx2 + 1; i < availableBlocks; i++) {
+    for (let i = idx2 + 1; i < availableBlocks + 10; i++) {
       const sprite = Sprite.from(i === idx2 + 1 ? "corner" : "ground");
       sprite.width = 40;
       sprite.height = 40;
@@ -194,12 +200,3 @@ export class Arithmetic {
 //
 //
 //
-//
-//
-//
-//
-//
-//
-// An easier way to do all of this:
-// draw draw draw, leave a gap
-// draw draw draw, leave another gap
