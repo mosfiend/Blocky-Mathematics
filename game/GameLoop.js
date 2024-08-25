@@ -105,6 +105,7 @@ export class GameLoop extends Container {
       ),
       // new Arithmetic(lastPlatform.x + 40, newBlock),
     ][Math.trunc(Math.random() * 1)];
+    Manager.curProblem = platform;
     this.curBlock = newBlock;
     this.addChild(platform.sprite);
     this.platforms.push(platform);

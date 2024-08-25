@@ -20,7 +20,6 @@ export class Stage extends Container {
     this.pause.x = this.screenWidth - 100;
     this.pause.width = 100;
     this.pause.height = 100;
-
     this.pause.eventMode = "static";
     this.pause.cursor = "pointer";
     this.pause.on("pointerdown", () => {});
@@ -92,9 +91,9 @@ export class Stage extends Container {
     world.pivot.set(DIFF, 0);
     this.bg.x = world.pivot.x;
 
+    this.handleCollisions();
     if (this.lost) return;
     this.handleEvent();
-    this.handleCollisions();
     this.scoreBoard.update();
     this.curOp.text = Manager.str || "";
     this.curOp.x =
@@ -135,7 +134,6 @@ export class Stage extends Container {
     const hero = colliders.find((body) => body.gameHero);
     const platform = colliders.find((body) => body.platform);
     // if (hero && platform && colliders[0].clr !== colliders[1].clr) {
-    //   this.lose();
     // }
   }
 
@@ -166,6 +164,25 @@ export class Stage extends Container {
   }
 
   handleCollisions() {
+    const safeSpace = Manager.curProblem?.safeSpace;
+    if (safeSpace) {
+      let hasPassed = false;
+      const hero = Manager.bodies[Manager.bodies.length - 1];
+      if (hero.x + hero.width > safeSpace.x && hero.x < safeSpace.x + 40)
+        if (hero.y + hero.height <= safeSpace.y + 40 && hero.y >= safeSpace.y) {
+          hasPassed = true;
+          Manager.bodies.forEach((body, idx) => {
+            if (idx === Manager.bodies.length - 1) return;
+            body.x = safeSpace.x - 40;
+            body.dx = 0;
+          });
+        } else {
+          this.lose();
+        }
+
+      if (hasPassed) Manager.curProblem = null;
+    }
+
     Manager.bodies.forEach((body, idx) => {
       Manager.obstacles.forEach((obstacle) => {
         const upperLimit = body.y;

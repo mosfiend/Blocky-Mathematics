@@ -68,21 +68,6 @@ export class Arithmetic {
       sprite.y = 80 + 40 * i;
       this.sprite.addChild(sprite);
     }
-    const body1 = new Body(this.sprite.x, this.sprite.y, 40, 40 + idx1 * 40, {
-      isStatic: true,
-    });
-
-    // const body3 = new Body(
-    //   this.sprite.x,
-    //   this.sprite.y,
-    //   this.sprite.width,
-    //   idx1 * 40,
-    //   {
-    //     isStatic: true,
-    //   },
-    // );
-
-    // this.bodies = [body1, body2, body3];
 
     this.operators = [...Manager.operators];
 
@@ -122,6 +107,10 @@ export class Arithmetic {
     value1.y = 80 + [idx1, idx2][possibilities] * 40;
     value2.x = 20 - value2.width / 2;
     value2.y = 80 + [idx1, idx2][(possibilities + 1) % 2] * 40;
+    this.safeSpace = {
+      x: value2.x + this.sprite.x,
+      y: value2.y + this.sprite.y,
+    };
   }
 
   update() {}
@@ -176,15 +165,10 @@ export class Arithmetic {
         this.values.push(this.result + this.operands[1]);
         break;
     }
-    if (String(this.result).length === 1) {
-      this.values.push(
-        Number(String(this.result) * Math.trunc(Math.random() * 3)),
-      );
-    } else {
-      this.values.push(
-        Number(String(this.result).split("").reverse().join("")),
-      );
-    }
+    this.values.push(
+      Number(String(this.result) * Math.trunc(Math.random() * 3)),
+    );
+
     this.values.push(this.result + Math.trunc(Math.random() * 10) + 1);
     this.values.push(this.result + Math.trunc(Math.random() * 20) + 1);
     for (let i = 0, l = this.values.length; i < l; i++) {
