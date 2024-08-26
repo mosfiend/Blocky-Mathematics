@@ -5,6 +5,7 @@ import { Manager } from "../manager.js";
 import { Background } from "../game/Background.js";
 import { Hero } from "../game/Hero.js";
 import { GameLoop } from "../game/GameLoop.js";
+import { Coin } from "../game/Coin.js";
 import { GameOver } from "../game/GameOver.js";
 import { StartMenu } from "./StartMenu.js";
 
@@ -39,6 +40,7 @@ export class Stage extends Container {
     //
 
     this.hero = new Hero(this.theme);
+    this.hasPassed = false;
     this.scoreBoard = new Score();
     this.curOp = new Text("???", {
       fill: 0xffffff,
@@ -126,9 +128,11 @@ export class Stage extends Container {
   handleEvent(key) {
     this.hero.handleEvent(key);
   }
+
   handleRelease(key) {
     this.hero.released = true;
   }
+
   interact(e) {
     const colliders = [e.pairs[0].bodyA, e.pairs[0].bodyB];
     const hero = colliders.find((body) => body.gameHero);
@@ -168,17 +172,27 @@ export class Stage extends Container {
     if (safeSpace) {
       let hasPassed = false;
       const hero = Manager.bodies[Manager.bodies.length - 1];
-      if (hero.x + hero.width > safeSpace.x && hero.x < safeSpace.x + 40)
+      if (hero.x + hero.width > safeSpace.x && hero.x <= safeSpace.x + 40) {
         if (hero.y + hero.height <= safeSpace.y + 40 && hero.y >= safeSpace.y) {
           hasPassed = true;
+          for (let i = 0; i < 5; i++) {
+            setTimeout(() => {
+              const coin = new Coin(hero.x + 40 + i * 2, 640 - 120 - hero.y);
+              this.addChild(coin);
+              this.gameLoop.coins.push(coin);
+            }, 100 * i);
+          }
+
           Manager.bodies.forEach((body, idx) => {
             if (idx === Manager.bodies.length - 1) return;
             body.x = safeSpace.x - 40;
             body.dx = 0;
+            body.isHit = true;
           });
         } else {
           this.lose();
         }
+      }
 
       if (hasPassed) Manager.curProblem = null;
     }
@@ -212,6 +226,7 @@ export class Stage extends Container {
             if (body.dx > 0) {
               body.x = obstacle.x - body.width;
               if (idx === Manager.bodies.length - 1) this.lose();
+              body.isHit = true;
             } else if (body.dx < 0) {
               body.x = obstacle.x + obstacle.width;
             }
@@ -229,6 +244,17 @@ export class Stage extends Container {
           }
         }
       });
+
+      for (let i = 0; i < Manager.bodies.length; i++) {
+        if (i === Manager.bodies.length) return;
+        if (Manager.bodies[i].isHit) {
+          this.hero.removeChild(this.hero.bods[i].sprite);
+          console.log(this.hero.bods, Manager.bodies);
+          Manager.bodies.splice(i, 1);
+          this.hero.bods.splice(i, 1);
+          i--;
+        }
+      }
 
       Manager.bodies.forEach((obstacle, idx) => {
         if (body.id === obstacle.id) {
@@ -304,3 +330,9 @@ class Score extends Container {
     this.text.text = ++this.score;
   }
 }
+
+// proposed solutions:
+//
+//
+// Give curProblem a property of "has been passed through"
+// When x exceeds curProblem, make curProblem null

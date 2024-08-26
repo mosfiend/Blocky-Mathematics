@@ -14,7 +14,8 @@ export class Arithmetic {
     // divide into two segments
     const idx1 =
       // Math.max(
-      Math.floor((availableBlocks / 2) * Math.random());
+      Math.floor(availableBlocks / 4) +
+      Math.floor((availableBlocks / 4) * Math.random());
     // );
     const idx2 = Math.max(
       idx1 + Math.floor((availableBlocks / 2 - 1) * Math.random()),
@@ -111,6 +112,10 @@ export class Arithmetic {
       x: value2.x + this.sprite.x,
       y: value2.y + this.sprite.y,
     };
+
+    this.body = new Body(this.safeSpace.x, this.safeSpace.y + 41, 40, 40, {
+      isStatic: true,
+    });
   }
 
   update() {}
@@ -149,28 +154,41 @@ export class Arithmetic {
       case "plus":
         this.result = this.operands[0] + this.operands[1];
         this.values.push(
-          this.operands[0] + this.operands[1] + this.operands[1],
+          this.operands[0] +
+            this.operands[1] +
+            this.operands[1] * (1 + Math.trunc(Math.random() * 3)),
+        );
+
+        this.values.push(
+          this.operands[1] +
+            this.operands[1] +
+            this.operands[0] * (1 + Math.trunc(Math.random() * 3)),
+        );
+        this.values.push(
+          Math.max(this.operands[1], this.operands[0]) -
+            Math.max(this.operands[1], this.operands[0]),
         );
         break;
       case "minus":
         this.result = this.operands[0] - this.operands[1];
-        this.values.push(Math.abs(this.operands[1] - this.operands[0]));
+        let val = Math.abs(this.operands[1] - this.operands[0]);
+        if (val === this.result)
+          val += this.operands[Math.trunc(Math.random() * 2)];
+        this.values.push(val);
         break;
       case "times":
         this.result = this.operands[0] * this.operands[1];
-        this.values.push(this.operands[1] * (this.operands[0] + 1));
+        let val2 = this.operands[1] * (this.operands[0] + 1);
+        if (val2 === this.result)
+          val2 += this.operands[Math.trunc(Math.random() * 2)];
+        this.values.push(val2);
         break;
       case "by":
         this.result = this.operands[0] / this.operands[1];
         this.values.push(this.result + this.operands[1]);
         break;
     }
-    this.values.push(
-      Number(String(this.result) * Math.trunc(Math.random() * 3)),
-    );
 
-    this.values.push(this.result + Math.trunc(Math.random() * 10) + 1);
-    this.values.push(this.result + Math.trunc(Math.random() * 20) + 1);
     for (let i = 0, l = this.values.length; i < l; i++) {
       this.values.push(this.values[i]);
     }

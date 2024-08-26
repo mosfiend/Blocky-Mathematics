@@ -44,7 +44,6 @@ export class Hero extends Container {
   }
 
   update(deltaTime) {
-    // console.log(
     //   this.bods.map((bod) => {
     //     return bod.sprite.y;
     //   }),
@@ -84,6 +83,16 @@ export class Hero extends Container {
 
     const isBelowCeiling = Manager.obstacles.filter((obst) => {
       const hero = this.bods[this.bods.length - 1];
+      const safeSpace = Manager.curProblem?.safeSpace;
+      console.log(safeSpace);
+      if (
+        safeSpace &&
+        hero.x + hero.width >= safeSpace.x &&
+        hero.x <= safeSpace.x + 40
+      ) {
+        console.log("hmm");
+        return false;
+      }
       if (
         !(
           (hero.sprite.x >= obst.x && hero.sprite.x <= obst.x + obst.width) ||
