@@ -63,12 +63,9 @@ export class GameLoop extends Container {
 
     const lastPlatform = this.platforms[this.platforms.length - 1].sprite;
     if (lastPlatform.x < Manager.app.stage.pivot.x + Manager.width) {
-      // if (this.step === 3) {
-      //   this.createObstacle(lastPlatform, this.curBlock);
-      // }
-      // else
       if (this.step === 0) {
-        console.log(lastPlatform, this.curBlock);
+        this.createObstacle(lastPlatform, this.curBlock);
+      } else if (this.step === 3) {
         this.createArithmeticBlock(lastPlatform, this.curBlock);
       } else {
         let newBlock =
