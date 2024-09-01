@@ -1,5 +1,5 @@
 import { Container, Sprite } from "pixi.js";
-import { Tween } from "tweedle.js";
+import { Easing, Tween } from "tweedle.js";
 import { Manager } from "../manager";
 
 export class Coin extends Container {
@@ -30,6 +30,7 @@ export class Coin extends Container {
       .onComplete(() => {
         this.removeChild(this.sprite);
       })
+      .easing(Easing.Quadratic.In)
       .start();
   }
 }

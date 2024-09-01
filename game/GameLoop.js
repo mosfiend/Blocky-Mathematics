@@ -11,7 +11,7 @@ export class GameLoop extends Container {
     this.screenWidth = Manager.width;
     this.screenHeight = Manager.height;
     this.diam = 40;
-    this.obstacles = [Gap, Arithmetic];
+    this.obstacles = [Gap];
     this.blocks = [];
     this.platforms = [];
     this.ceilings = [];
@@ -55,13 +55,22 @@ export class GameLoop extends Container {
       }
     }
 
+    this.ceilings[0].update();
+    this.ceilings[1].update();
     this.platforms.forEach((platform) => {
       platform.update(deltaTime);
     });
 
     const lastPlatform = this.platforms[this.platforms.length - 1].sprite;
     if (lastPlatform.x < Manager.app.stage.pivot.x + Manager.width) {
-      if (this.step !== 3) {
+      // if (this.step === 3) {
+      //   this.createObstacle(lastPlatform, this.curBlock);
+      // }
+      // else
+      if (this.step === 0) {
+        console.log(lastPlatform, this.curBlock);
+        this.createArithmeticBlock(lastPlatform, this.curBlock);
+      } else {
         let newBlock =
           this.curBlock +
           Math.trunc(Math.random() * 3) *
@@ -70,8 +79,6 @@ export class GameLoop extends Container {
         if (newBlock > 6) newBlock = 6;
         if (this.step === 4) newBlock = this.curBlock;
         this.createPlatform(lastPlatform, newBlock);
-      } else {
-        this.createObstacle(lastPlatform, this.curBlock);
       }
     }
   }
@@ -87,40 +94,45 @@ export class GameLoop extends Container {
     this.curBlock = newBlock;
     this.addChild(platform.sprite);
     this.platforms.push(platform);
-    this.step = (this.step + 1) % 5;
-    const coin = new Coin(lastPlatform.x + lastPlatform.width, newBlock * 40);
-    this.addChild(coin);
-    this.coins.push(coin);
+    this.step = (this.step + 1) % 6;
   }
 
   createObstacle(lastPlatform, newBlock) {
-    const Nap =
+    const Obstacle =
       this.obstacles[Math.trunc(Math.random() * this.obstacles.length)];
 
-    const platform = [
-      new Arithmetic(
-        lastPlatform.x + lastPlatform.width,
-        newBlock,
-        3 + Math.trunc(Math.random() * 5),
-      ),
-      // new Arithmetic(lastPlatform.x + 40, newBlock),
-    ][Math.trunc(Math.random() * 1)];
+    const platform = new Obstacle(
+      lastPlatform.x + lastPlatform.width,
+      newBlock,
+      3 + Math.trunc(Math.random() * 5),
+    );
+    // new Arithmetic(lastPlatform.x + 40, newBlock),
     Manager.curProblem = platform;
     this.curBlock = newBlock;
     this.addChild(platform.sprite);
     this.platforms.push(platform);
-    this.step = (this.step + 1) % 5;
+    this.step = (this.step + 1) % 6;
+
+    const coin = new Coin(
+      lastPlatform.x + lastPlatform.width + 20,
+      (newBlock + Math.trunc(Math.random() * 2) + 1) * 40,
+    );
+    this.addChild(coin);
+    this.coins.push(coin);
   }
 
-  createArithmeticBlock() {
-    const block = new Arithmetic(
-      this.blocks[this.blocks.length - 1].y - this.screenHeight * 0.75,
+  createArithmeticBlock(lastPlatform, newBlock) {
+    const platform = new Arithmetic(
+      lastPlatform.x + lastPlatform.width,
+      newBlock,
+      3 + Math.trunc(Math.random() * 5),
     );
-
-    this.step = (this.step + 1) % 5;
-    this.blocks.push(block);
-    this.addChild(block);
-    this.addChild(star);
+    // new Arithmetic(lastPlatform.x + 40, newBlock),
+    Manager.curProblem = platform;
+    this.curBlock = newBlock;
+    this.addChild(platform.sprite);
+    this.platforms.push(platform);
+    this.step = (this.step + 1) % 6;
   }
 }
 
@@ -158,7 +170,6 @@ class Ceiling {
     this.sprite = new Container();
     this.sprite.x = x;
     this.sprite.y = 0;
-
     for (let i = 0; i < blocksX; i++) {
       for (let j = 0; j < 2; j++) {
         const sprite = Sprite.from(j === 0 ? "grass" : "ground");
@@ -184,9 +195,9 @@ class Ceiling {
     );
   }
   update() {
-    this.body.setVelocity(-2, 0);
-    this.sprite.x = this.body.position.x;
-    this.sprite.y = this.body.position.y;
+    // this.body.setVelocity(-2, 0);
+    this.body.x = this.sprite.x;
+    this.body.y = this.sprite.y - 40;
   }
 }
 // class Tile extends Sprite {

@@ -28,6 +28,7 @@ export const manifest = {
         again: "/images/again.png",
         trees1: "/images/trees1.png",
         trees2: "/images/trees2.png",
+        "star-icon": "/images/star-icon.png",
       },
     },
     {

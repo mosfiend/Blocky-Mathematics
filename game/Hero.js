@@ -64,13 +64,23 @@ export class Hero extends Container {
   die() {
     // Manager.bodies.unshift(); // might need this if I set the minimum width of a tile to 40*3 (>100),
     // so I will no longer need to worry about it colliding with the previous tile because it's too narrow
+    this.lost = true;
     const hero = this.bods[this.bods.length - 1];
     const changes = { x: hero.body.x - 100 };
     hero.body.dy = -5;
     hero.body.y = hero.body.y - 10;
     const jumpBack = new Tween(hero.body)
       .to(changes, 300)
-      .onUpdate(() => {})
+      .onUpdate(() => {
+        const world = Manager.app.stage;
+        const DIFF =
+          this.mainBody.sprite.x -
+          this.screenWidth / 2 +
+          this.mainBody.sprite.width;
+        // if (DIFF > 100) {
+        //
+        world.pivot.set(DIFF, 0);
+      })
       .start();
     Manager.bodies.forEach((body) => {
       body.dx = 0;
@@ -81,16 +91,16 @@ export class Hero extends Container {
     // if (this.bods.length > 10) return;
     //flip pointer between this .body and bods[bods.length-1]
 
+    if (this.lost) return;
+
     const isBelowCeiling = Manager.obstacles.filter((obst) => {
       const hero = this.bods[this.bods.length - 1];
       const safeSpace = Manager.curProblem?.safeSpace;
-      console.log(safeSpace);
       if (
         safeSpace &&
         hero.x + hero.width >= safeSpace.x &&
         hero.x <= safeSpace.x + 40
       ) {
-        console.log("hmm");
         return false;
       }
       if (
@@ -112,16 +122,21 @@ export class Hero extends Container {
     });
 
     if (isBelowCeiling.length >= 1) return;
+
+    this.sound.play("jump");
+
     const lastBody = this.bods.pop();
     this.removeChild(lastBody.sprite);
     const newBlock = lastBody;
     const spriteTemp = lastBody.sprite;
-    newBlock.sprite = new Graphics()
+    (newBlock.sprite = new Graphics()
       // .lineStyle(2, 0xd09080)
-      .roundRect(0, 0, this.diam, this.diam, 5)
-      .fill(0xf7b3a2);
-    // this.addChild(newBlock)
-    newBlock.sprite.position.set(spriteTemp.x, spriteTemp.y);
+      .roundRect(0, 0, this.diam - 2, this.diam - 2, 5)
+      .fill(0xf7b3a2)
+      .roundRect(0, 0, this.diam - 2, this.diam - 2, 5)
+      .stroke({ width: 2, color: 0x7b5951 })),
+      // this.addChild(newBlock)
+      newBlock.sprite.position.set(spriteTemp.x, spriteTemp.y);
     newBlock.body.gameHero = false;
 
     this.bods.push(newBlock);

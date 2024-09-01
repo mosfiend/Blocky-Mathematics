@@ -25,17 +25,15 @@ export class Stage extends Container {
     this.pause.cursor = "pointer";
     this.pause.on("pointerdown", () => {});
     const sprites = {
-      jump: { start: 1.2, end: 2 },
-      collect: { start: 2.2, end: 3.5 },
+      jump: { start: 0.35, end: 1 },
+      collect: { start: 1.5, end: 3.5 },
       change: { start: 3.7, end: 4 },
-      death: { start: 12, end: 13 },
+      death: { start: 7, end: 8 },
     };
     this.theme = Sound.from({ url: "sounds/sounds.mp3", sprites: sprites });
     this.theme.volume = 0.05;
-    // this.theme.sprites = sprites;
-    // this.lost = false;
+    this.lost = false;
     // this.theme.play();
-    // this.song = sound.add("spice", "/assets/images/ITS.mp3")
     /// ELEMENTS
     //
 
@@ -67,6 +65,7 @@ export class Stage extends Container {
     this.watch(Manager.app.view);
     // Event handling
   }
+
   transitionIn() {
     Manager.app.stage.addChild(Manager.currentScene);
   }
@@ -75,13 +74,21 @@ export class Stage extends Container {
     Manager.app.stage.removeChild(Manager.currentScene);
     // Manager.app.stage.off("mousemove") remember to turn off events
   }
+
   resize(newWidth, newHeight) {
     this.screenWidth = newWidth;
     this.screenHeight = newHeight;
   }
+
   update(deltaTime) {
     this.collectCoin();
     this.hero.update(deltaTime);
+    this.bg.update(deltaTime);
+
+    this.handleCollisions();
+    if (this.lost) return;
+
+    this.handleEvent();
 
     const world = Manager.app.stage;
     const DIFF =
@@ -91,18 +98,13 @@ export class Stage extends Container {
     // if (DIFF > 100) {
     //
     world.pivot.set(DIFF, 0);
-    this.bg.x = world.pivot.x;
-
-    this.handleCollisions();
-    if (this.lost) return;
-    this.handleEvent();
     this.scoreBoard.update();
     this.curOp.text = Manager.str || "";
     this.curOp.x =
       Manager.app.stage.pivot.x + this.screenWidth - this.curOp.width - 15;
 
     this.pause.y = Manager.app.stage.pivot.y + 20;
-    this.bg.update(deltaTime);
+    this.curOp.y = 8;
     // }
     this.gameLoop.update(deltaTime);
 
@@ -113,16 +115,8 @@ export class Stage extends Container {
   }
 
   watch(el) {
-    el.addEventListener("keydown", (e) => {
-      this.keySet.add(e.key);
-      if (e.key === " ") this.released = false;
-      this.handleEvent(e.key);
-    });
-    el.addEventListener("keyup", (e) => {
-      if (e.key === " ") {
-        this.handleRelease(e.key);
-      }
-    });
+    el.addEventListener("keydown", handleKeyPress.bind(this));
+    el.addEventListener("keyup", handleRelease.bind(this));
   }
 
   handleEvent(key) {
@@ -143,28 +137,41 @@ export class Stage extends Container {
 
   lose() {
     this.hero.die();
+    Manager.app.view.removeEventListener("keyup", handleKeyPress.bind(this));
+    Manager.app.view.removeEventListener("keydown", handleRelease);
+    this.theme.play("death");
     this.lost = true;
-    // const temp = new Graphics()
-    //   .rect(0, 0, this.screenWidth, this.screenHeight);
-    //   .fill(0x2e3037)
-    // temp.y = Manager.app.stage.pivot.y;
-    // temp.alpha = 0;
-    // this.addChild(temp);
-    // const tween1 = new Tween(temp).to({ alpha: 0 }, 400);
-    // const tween2 = new Tween(temp).to({ alpha: 1 }, 500);
+    const temp = new Graphics()
+      .rect(0, 0, this.screenWidth, this.screenHeight)
+      .fill(0x2e3037);
+    temp.x = Manager.app.stage.pivot.x;
+    temp.alpha = 0;
+    this.addChild(temp);
+    const tween1 = new Tween(temp).to({ alpha: 0 }, 200);
+    const tween2 = new Tween(temp).to({ alpha: 1 }, 500);
     //
-    // tween1.start().onComplete(() => {
-    //   tween2.start().onComplete(() => {
-    //     const scene = new GameOver(func);
-    //     Manager.app.stage.pivot.set(0, 0);
-    //     this.addChild(scene);
-    //   });
-    // });
-    // function func() {
-    //   Manager.clearPhysics();
-    //   Manager.createPhysics();
-    //   Manager.changeScene(new Stage());
-    // }
+    tween1
+      .start()
+      .onUpdate(() => {
+        temp.x = Manager.app.stage.pivot.x;
+      })
+      .onComplete(() => {
+        tween2
+          .start()
+          .onUpdate(() => {
+            temp.x = Manager.app.stage.pivot.x;
+          })
+          .onComplete(() => {
+            Manager.app.stage.pivot.x = 0;
+            temp.x = 0;
+            const scene = new GameOver(func, this.scoreBoard.score);
+            this.addChild(scene);
+          });
+      });
+    function func() {
+      Manager.clearPhysics();
+      Manager.changeScene(new Stage());
+    }
   }
 
   handleCollisions() {
@@ -174,6 +181,7 @@ export class Stage extends Container {
       const hero = Manager.bodies[Manager.bodies.length - 1];
       if (hero.x + hero.width > safeSpace.x && hero.x <= safeSpace.x + 40) {
         if (hero.y + hero.height <= safeSpace.y + 40 && hero.y >= safeSpace.y) {
+          console.log("we won");
           hasPassed = true;
           for (let i = 0; i < 5; i++) {
             setTimeout(() => {
@@ -185,6 +193,7 @@ export class Stage extends Container {
 
           Manager.bodies.forEach((body, idx) => {
             if (idx === Manager.bodies.length - 1) return;
+            if (body.isHit) return;
             body.x = safeSpace.x - 40;
             body.dx = 0;
             body.isHit = true;
@@ -247,9 +256,12 @@ export class Stage extends Container {
 
       for (let i = 0; i < Manager.bodies.length; i++) {
         if (i === Manager.bodies.length) return;
-        if (Manager.bodies[i].isHit) {
+        if (
+          (Manager.bodies[i].isHit &&
+            Manager.bodies[i].x < Manager.app.stage.pivot.x - 41) ||
+          Manager.bodies[i].y > Manager.screenHeight
+        ) {
           this.hero.removeChild(this.hero.bods[i].sprite);
-          console.log(this.hero.bods, Manager.bodies);
           Manager.bodies.splice(i, 1);
           this.hero.bods.splice(i, 1);
           i--;
@@ -298,6 +310,7 @@ export class Stage extends Container {
           this.scoreBoard.increment(coin.collected);
           coin.activate();
           coin.collected = true;
+          this.theme.play("collect");
         }
       }
     });
@@ -310,6 +323,8 @@ class Score extends Container {
     this.sprite = Sprite.from("coin");
     this.score = 0;
     this.collected = collected;
+    this.sprite.width = 30;
+    this.sprite.height = 30;
 
     this.text = new Text("0", {
       fill: 0xffffff,
@@ -336,3 +351,16 @@ class Score extends Container {
 //
 // Give curProblem a property of "has been passed through"
 // When x exceeds curProblem, make curProblem null
+function handleKeyPress(e) {
+  console.log(e.target);
+  this.keySet.add(e.key);
+  if (e.key === " ") this.released = false;
+  this.handleEvent(e.key);
+}
+
+function handleRelease(e) {
+  console.log("turned off");
+  if (e.key === " ") {
+    this.handleRelease(e.key);
+  }
+}

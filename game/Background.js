@@ -23,16 +23,17 @@ export class Background extends Container {
     this.clouds1 = new Clouds("clouds1", 2);
     this.clouds2 = new Clouds("clouds2", 1.3);
     this.trees1 = new Trees("trees1", 0.4);
+    // this.trees1.x = -10;
     this.trees1.y = 220;
     this.trees1.alpha = 0.96;
     this.trees2 = new Trees("trees2", 0.4);
+    // this.trees2.x = -10;
     this.trees2.y = 300;
     this.filler = new Graphics()
       .rect(0, 0, this.screenWidth + 20, 100)
       .fill(0x11211e);
     this.filler.x = 0;
     this.filler.y = this.screenHeight - 100;
-    console.log(this.filler.x, this.filler.y);
     this.addChild(
       this.clouds1,
       this.clouds2,
@@ -43,6 +44,7 @@ export class Background extends Container {
   }
 
   update(deltaTime) {
+    this.x = Manager.app.stage.pivot.x;
     // this.clouds1.tilePosition.x -= 0.1;
     // this.clouds2.tilePosition.x -= 0.25;
     this.trees1.tilePosition.x -= 0.4;
@@ -61,11 +63,9 @@ class Clouds extends Container {
     super();
     // this.texture = Texture.from(texture);
     this.graph = new Graphics()
-      .rect(0, 0, Manager.width, Manager.height)
+      .rect(-10, 0, Manager.width + 20, Manager.height)
       .fill(0x50b4d4);
     this.addChild(this.graph);
-    this.width = Manager.width;
-    this.height = Manager.height;
   }
 }
 
@@ -75,7 +75,7 @@ class Trees extends TilingSprite {
     this.texture = Texture.from(texture);
     this.scale.x = scale;
     this.scale.y = scale;
-    this.width = Manager.width / scale;
-    this.height = Manager.height;
+    this.width = Manager.width / scale + 20;
+    this.height = Manager.height / scale;
   }
 }
