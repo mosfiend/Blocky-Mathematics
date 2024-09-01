@@ -181,7 +181,6 @@ export class Stage extends Container {
       const hero = Manager.bodies[Manager.bodies.length - 1];
       if (hero.x + hero.width > safeSpace.x && hero.x <= safeSpace.x + 40) {
         if (hero.y + hero.height <= safeSpace.y + 40 && hero.y >= safeSpace.y) {
-          console.log("we won");
           hasPassed = true;
           for (let i = 0; i < 5; i++) {
             setTimeout(() => {
@@ -352,14 +351,14 @@ class Score extends Container {
 // Give curProblem a property of "has been passed through"
 // When x exceeds curProblem, make curProblem null
 function handleKeyPress(e) {
-  console.log(e.target);
+  // console.log(e.target);
   this.keySet.add(e.key);
   if (e.key === " ") this.released = false;
   this.handleEvent(e.key);
 }
 
 function handleRelease(e) {
-  console.log("turned off");
+  // console.log("turned off");
   if (e.key === " ") {
     this.handleRelease(e.key);
   }
