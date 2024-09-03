@@ -51,7 +51,7 @@ export class Manager {
 
     const soundSettings = JSON.parse(localStorage.getItem("soundSettings"));
     if (soundSettings) {
-      Manager.soundSettings = savedState;
+      Manager.soundSettings = soundSettings;
     } else {
       Manager.soundSettings = {
         music: true,
