@@ -1,12 +1,13 @@
 import axios from "axios";
-import * as profanity from "badwords";
+import * as profane from "badwords";
 import { Tween } from "tweedle.js";
 import { Container, Graphics, Sprite, Text } from "pixi.js";
 import { Menu } from "./Menu";
 import { Selection } from "./Buttons";
 import { Manager } from "../manager";
 import { Input } from "@pixi/ui";
-
+const profanity = profane;
+console.log(profanity, profane);
 export class GameOver extends Container {
   constructor(cb, score) {
     super();
