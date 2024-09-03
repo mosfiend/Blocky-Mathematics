@@ -4,7 +4,7 @@ import { Manager } from "../manager";
 import { Tween } from "tweedle.js";
 import { Body } from "./Body";
 export class Hero extends Container {
-  constructor(sound) {
+  constructor() {
     super();
     this.screenWidth = Manager.width;
     this.screenHeight = Manager.height;
@@ -13,7 +13,6 @@ export class Hero extends Container {
     this.released = true;
     this.clr = Manager.colors[Math.trunc(Math.random() * 4)];
     this.diam = 40;
-    this.sound = sound;
     // graphics
     this.mainBody = {};
     this.mainBody.sprite = Sprite.from("hero");
@@ -123,7 +122,7 @@ export class Hero extends Container {
 
     if (isBelowCeiling.length >= 1) return;
 
-    this.sound.play("jump");
+    Manager.sfx.play("jump");
 
     const lastBody = this.bods.pop();
     this.removeChild(lastBody.sprite);

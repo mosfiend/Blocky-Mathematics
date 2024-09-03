@@ -1,4 +1,5 @@
 import * as PIXI from "pixi.js";
+import { Sound } from "@pixi/sound";
 import { Manager } from "../manager";
 import { manifest } from "../assets/assets";
 import { StartMenu } from "./StartMenu";
@@ -16,6 +17,20 @@ export class LoaderScene extends PIXI.Container {
     await PIXI.Assets.init({ manifest });
     const bundleIds = manifest.bundles.map((bundle) => bundle.name);
     await PIXI.Assets.loadBundle(bundleIds);
+
+    const sprites = {
+      jump: { start: 0.35, end: 1 },
+      collect: { start: 1.5, end: 3.5 },
+      change: { start: 3.7, end: 4 },
+      death: { start: 7, end: 8 },
+    };
+    Manager.sfx = Sound.from({ url: "sounds/sounds.mp3", sprites: sprites });
+    Manager.sfx.volume = Manager.soundSettings.sfx ? 0.05 : 0;
+    Manager.music = Sound.from({ url: "sounds/theme.mp3", sprites: sprites });
+    Manager.music.volume = Manager.soundSettings.music ? 0.11 : 0;
+    Manager.music.loop = true;
+    Manager.music.play();
+    console.log(Manager.music);
   }
   downloadProgress(progressRatio) {}
   gameLoaded() {

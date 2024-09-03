@@ -63,11 +63,9 @@ export class GameLoop extends Container {
 
     const lastPlatform = this.platforms[this.platforms.length - 1].sprite;
     if (lastPlatform.x < Manager.app.stage.pivot.x + Manager.width) {
-      // if (this.step === 3) {
-      //   this.createObstacle(lastPlatform, this.curBlock);
-      // }
-      // else
-      if (this.step === 0) {
+      if (this.step === 3) {
+        this.createObstacle(lastPlatform, this.curBlock);
+      } else if (this.step === 0) {
         this.createArithmeticBlock(lastPlatform, this.curBlock);
       } else {
         let newBlock =
@@ -77,16 +75,23 @@ export class GameLoop extends Container {
         if (newBlock < 1) newBlock = 1;
         if (newBlock > 6) newBlock = 6;
         if (this.step === 4) newBlock = this.curBlock;
-        this.createPlatform(lastPlatform, newBlock);
+
+        let isCorner = { left: false, right: false };
+
+        if (this.step === 2 || newBlock < this.curBlock) isCorner.right = true;
+        if (this.step === 4 || newBlock > this.curBlock) isCorner.left = true;
+
+        this.createPlatform(lastPlatform, newBlock, isCorner);
       }
     }
   }
-  createPlatform(lastPlatform, newBlock) {
+  createPlatform(lastPlatform, newBlock, isCorner) {
     const platform = [
       new Platform(
         lastPlatform.x + lastPlatform.width,
         newBlock,
         3 + Math.trunc(Math.random() * 5),
+        isCorner,
       ),
       // new Arithmetic(lastPlatform.x + 40, newBlock),
     ][Math.trunc(Math.random() * 1)];
@@ -106,7 +111,6 @@ export class GameLoop extends Container {
       3 + Math.trunc(Math.random() * 5),
     );
     // new Arithmetic(lastPlatform.x + 40, newBlock),
-    Manager.curProblem = platform;
     this.curBlock = newBlock;
     this.addChild(platform.sprite);
     this.platforms.push(platform);
@@ -116,7 +120,7 @@ export class GameLoop extends Container {
       lastPlatform.x + lastPlatform.width + 20,
       (newBlock + Math.trunc(Math.random() * 2) + 1) * 40,
     );
-    this.addChild(coin);
+    Manager.currentScene.addChild(coin);
     this.coins.push(coin);
   }
 
@@ -136,7 +140,7 @@ export class GameLoop extends Container {
 }
 
 class Platform {
-  constructor(x, blocksY, blocksX) {
+  constructor(x, blocksY, blocksX, isCorner = { right: false, left: false }) {
     // this.sprite = new Graphics().beginFill(0x00ff00).drawRect(0, 0, 40 * 5, 40);
     this.sprite = new Container();
     this.sprite.x = x;
@@ -145,7 +149,15 @@ class Platform {
 
     for (let i = 0; i < blocksX; i++) {
       for (let j = 0; j < num; j++) {
-        const sprite = Sprite.from(j === 0 ? "grass" : "ground");
+        const sprite = Sprite.from(
+          j === 0
+            ? i === blocksX - 1 && isCorner.right
+              ? "right"
+              : i === 0 && isCorner.left
+                ? "left"
+                : "grass"
+            : "ground",
+        );
         sprite.x = 40 * i;
         sprite.y = 40 * j;
         sprite.width = 40;

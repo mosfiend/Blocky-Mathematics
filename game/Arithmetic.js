@@ -125,14 +125,21 @@ export class Arithmetic {
       this.operators[Math.trunc(Math.random() * this.operators.length)];
     const ceil1 =
       this.operator === "minus" || this.operator === "plus" ? 20 : 10;
-    this.operands[0] = Math.trunc(Math.random() * ceil1) + 1;
+    this.operands[0] =
+      this.operator === "plus"
+        ? 20 - Math.ceil(Math.random() * ceil1)
+        : Math.trunc(Math.random() * ceil1);
     const ceil2 =
       this.operator === "minus"
         ? this.operands[0]
         : this.operator === "plus"
-          ? 20
+          ? 20 - this.operands[0]
           : 10;
     this.operands[1] = Math.trunc(Math.random() * ceil2) + 1;
+
+    if (this.operator === "minus") {
+      this.operands[0] = Math.max(this.operands[0], 1); // prevent negative op
+    }
     if (this.operator === "by") {
       this.operands[0] = this.operands[0] * this.operands[1];
     }
@@ -146,28 +153,20 @@ export class Arithmetic {
     }
 
     Manager.setOperation(
-      `${this.operands[0]} ${this.icons[this.operator]} ${this.operands[1]} =   
+      `${this.operands[0]} ${this.icons[this.operator]} ${this.operands[1]} =
         `,
     );
 
     switch (this.operator) {
       case "plus":
         this.result = this.operands[0] + this.operands[1];
-        this.values.push(
-          this.operands[0] +
-            this.operands[1] +
-            this.operands[1] * (1 + Math.trunc(Math.random() * 3)),
-        );
+        const rand = Math.trunc(Math.random() * 21);
+        const rand2 = Math.trunc(Math.random() * 21);
+        const rand3 = Math.trunc(Math.random() * 21);
+        this.values.push(rand === this.result ? rand - 1 : rand);
+        this.values.push(rand2 === this.result ? rand2 - 1 : rand2);
+        this.values.push(rand3 === this.result ? rand3 - 1 : rand3);
 
-        this.values.push(
-          this.operands[1] +
-            this.operands[1] +
-            this.operands[0] * (1 + Math.trunc(Math.random() * 3)),
-        );
-        this.values.push(
-          Math.max(this.operands[1], this.operands[0]) -
-            Math.max(this.operands[1], this.operands[0]),
-        );
         break;
       case "minus":
         this.result = this.operands[0] - this.operands[1];

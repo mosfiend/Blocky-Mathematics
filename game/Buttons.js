@@ -40,7 +40,6 @@ export class Icon extends Container {
 
     this.alpha = Manager.arithmetic[this.operator] ? 1 : 0.6;
     this.on("pointerdown", () => {
-      console.log("selection");
       this.select();
     });
   }
@@ -53,6 +52,7 @@ export class Icon extends Container {
       this.alpha = 0.6;
       Manager.arithmetic[this.operator] = false;
     }
+    localStorage.setItem("arithmeticState", JSON.stringify(Manager.arithmetic));
 
     this.selected = !this.selected;
   }
