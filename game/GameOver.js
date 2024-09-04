@@ -7,7 +7,6 @@ import { Selection } from "./Buttons";
 import { Manager } from "../manager";
 import { Input } from "@pixi/ui";
 const profanity = profane;
-console.log(profanity, profane);
 export class GameOver extends Container {
   constructor(cb, score) {
     super();

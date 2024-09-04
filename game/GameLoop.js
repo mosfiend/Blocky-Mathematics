@@ -62,7 +62,7 @@ export class GameLoop extends Container {
     });
 
     const lastPlatform = this.platforms[this.platforms.length - 1].sprite;
-    if (lastPlatform.x < Manager.app.stage.pivot.x + Manager.width) {
+    if (lastPlatform.x < Manager.app.stage.pivot.x + Manager.width + 100) {
       if (this.step === 3) {
         this.createObstacle(lastPlatform, this.curBlock);
       } else if (this.step === 0) {
@@ -98,7 +98,7 @@ export class GameLoop extends Container {
     this.curBlock = newBlock;
     this.addChild(platform.sprite);
     this.platforms.push(platform);
-    this.step = (this.step + 1) % 6;
+    this.step = (this.step + 1) % 5;
   }
 
   createObstacle(lastPlatform, newBlock) {
@@ -114,7 +114,7 @@ export class GameLoop extends Container {
     this.curBlock = newBlock;
     this.addChild(platform.sprite);
     this.platforms.push(platform);
-    this.step = (this.step + 1) % 6;
+    this.step = (this.step + 1) % 5;
 
     const coin = new Coin(
       lastPlatform.x + lastPlatform.width + 20,
@@ -135,7 +135,7 @@ export class GameLoop extends Container {
     this.curBlock = newBlock;
     this.addChild(platform.sprite);
     this.platforms.push(platform);
-    this.step = (this.step + 1) % 6;
+    this.step = (this.step + 1) % 5;
   }
 }
 
